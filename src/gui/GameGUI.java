@@ -7,10 +7,13 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import logic.GameLogic;
 
@@ -77,6 +80,10 @@ public class GameGUI extends Application {
 		new AnimationTimer() {
 			@Override
 			public void handle(long now) {
+				if (game.isGameOver()) {
+					stop(); // Stop the game loop
+					showGameOverScreen(); // Show the game over screen
+				}
 				gc.clearRect(0, 0, WIDTH, HEIGHT);
 				drawChessBoard();
 				drawEntities();
@@ -121,6 +128,23 @@ public class GameGUI extends Application {
 					bulletSize);
 		}
 	}
+
+	private void showGameOverScreen() {
+		Label gameOverLabel = new Label("Game Over");
+		gameOverLabel.setFont(new Font("Arial", 50));
+		gameOverLabel.setTextFill(Color.RED);
+
+		VBox layout = new VBox(20);
+		layout.getChildren().add(gameOverLabel);
+
+		Scene gameOverScene = new Scene(layout, 400, 300);
+		Stage gameOverStage = new Stage();
+		gameOverStage.setScene(gameOverScene);
+		gameOverStage.setTitle("Game Over");
+		gameOverStage.show();
+	}
+
+	// Getter & Setter
 
 	private void handleShooting(long now) {
 		if (isSpacebarPressed && now - lastShootTime >= SHOOT_COOLDOWN * 1_000_000) { // Convert ms to ns
