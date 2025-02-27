@@ -4,12 +4,21 @@ import entity.base.*;
 import entity.player.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -21,7 +30,6 @@ public class GameGUI extends Application {
 	private static boolean isSpacebarPressed = false;
 	private static long lastShootTime = 0;
 	private static final long SHOOT_COOLDOWN = 1000;
-
 	private static final int BOARD_SIZE = 17;
 	private static final int TILE_SIZE = 40;
 	private static final int WIDTH = BOARD_SIZE * TILE_SIZE;
@@ -34,13 +42,92 @@ public class GameGUI extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		// Main Menu Setup
+		showMainMenu(primaryStage);
+	}
+
+	// Show the main menu
+	private void showMainMenu(Stage primaryStage) {
+		primaryStage.setTitle("Game Menu");
+
+		// Load Background Image
+		Image bgImage = new Image("image1_0.png");
+		BackgroundImage backgroundImage = new BackgroundImage(bgImage, BackgroundRepeat.NO_REPEAT,
+				BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+				new BackgroundSize(100, 100, true, true, true, false));
+
+		// Create Layout with Background
+		VBox layout = new VBox(20);
+		layout.setBackground(new Background(backgroundImage));
+
+		// Create buttons
+		Button startButton = new Button("Start Game");
+		Button quitButton = new Button("Quit");
+
+		startButton.setOnAction(e -> showWaveSelectionScreen(primaryStage));
+
+		quitButton.setOnAction(e -> System.exit(0));
+		Region spacer = new Region();
+		StackPane.setAlignment(spacer, Pos.TOP_CENTER);
+		spacer.setPrefHeight(0.25 * 680);
+		// Add buttons to layout
+		layout.getChildren().addAll(spacer, startButton, quitButton);
+		layout.setStyle("-fx-alignment: center; -fx-padding: 50;");
+
+		// Set Scene with new size (680x680)
+		Scene scene = new Scene(layout, 680, 680);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
+	// Show the wave selection screen after clicking "Start Game"
+	private void showWaveSelectionScreen(Stage primaryStage) {
+		VBox levelSelectionLayout = new VBox(20);
+		levelSelectionLayout.setAlignment(Pos.CENTER);
+
+		// Wave selection options (ComboBox for simplicity)
+		ComboBox<String> levelSelectionComboBox = new ComboBox<>();
+		levelSelectionComboBox.getItems().addAll("Level 1", "Level 2", "Level 3", "Level 4");
+		levelSelectionComboBox.setValue("Level 1");
+
+		// Start Button (to start the game with selected wave)
+		Button startGameButton = new Button("Start Game");
+		// In showWaveSelectionScreen method of GameGUI.java
+		startGameButton.setOnAction(e -> {
+			String selectedLevel = levelSelectionComboBox.getValue();
+			int level = levelSelectionComboBox.getSelectionModel().getSelectedIndex() + 1;
+
+			// Set the wave in GameLogic before starting the game
+			GameLogic.getInstance().setWave(level);
+
+			try {
+				gameStart(primaryStage);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		});
+		// Add components to layout
+		levelSelectionLayout.getChildren().addAll(new javafx.scene.control.Label("Choose Level"),
+				levelSelectionComboBox, startGameButton);
+
+		// Set Scene for Wave Selection
+		Scene waveSelectionScene = new Scene(levelSelectionLayout, 680, 680);
+		primaryStage.setScene(waveSelectionScene);
+		primaryStage.show();
+	}
+
+	public void gameStart(Stage primaryStage) {
 		game = GameLogic.getInstance();
 		canvas = new Canvas(WIDTH, HEIGHT);
 		gc = canvas.getGraphicsContext2D();
 
-		ImageView playerImageView = GameLogic.getInstance().getPlayer().getPlayerImageView();
+		Player player = game.getPlayer();
+		// Position player properly on screen
+		player.getPlayerImageView().setTranslateX(player.getGridX() * TILE_SIZE);
+		player.getPlayerImageView().setTranslateY(player.getGridY() * TILE_SIZE);
+
 		root = new StackPane(canvas);
-		root.getChildren().add(playerImageView);
+		root.getChildren().add(player.getPlayerImageView());
 
 		Scene scene = new Scene(root);
 
@@ -50,7 +137,6 @@ public class GameGUI extends Application {
 
 		// Handle player input
 		scene.setOnKeyPressed(event -> {
-			Player player = game.getPlayer();
 			if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.W) {
 				player.moveUp();
 			} else if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S) {
@@ -93,7 +179,7 @@ public class GameGUI extends Application {
 		}.start();
 	}
 
-	// ♟️ Draw a proper 16x16 chess board
+	// Draw a proper 16x16 chess board
 	private void drawChessBoard() {
 		for (int row = 0; row < BOARD_SIZE; row++) {
 			for (int col = 0; col < BOARD_SIZE; col++) {
@@ -134,8 +220,19 @@ public class GameGUI extends Application {
 		gameOverLabel.setFont(new Font("Arial", 50));
 		gameOverLabel.setTextFill(Color.RED);
 
+		Button restart = new Button("Restart");
+
+		Button quit = new Button("Quit");
+
 		VBox layout = new VBox(20);
-		layout.getChildren().add(gameOverLabel);
+		layout.setAlignment(Pos.CENTER);
+
+		Image bgImage = new Image(getClass().getResourceAsStream("/gameOverBg.png"));
+		BackgroundImage bg = new BackgroundImage(bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+				BackgroundPosition.CENTER, new BackgroundSize(100, 100, true, true, false, true));
+
+		layout.setBackground(new Background(bg));
+		layout.getChildren().addAll(gameOverLabel, restart, quit);
 
 		Scene gameOverScene = new Scene(layout, 400, 300);
 		Stage gameOverStage = new Stage();

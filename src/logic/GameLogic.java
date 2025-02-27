@@ -1,145 +1,194 @@
 package logic;
 
 import entity.base.*;
+import entity.enemy.Enemy;
 import entity.piece.*;
 import entity.player.Player;
-import gui.GameGUI;
+import ability.Ability;
+import ability.ShootCardinal;
+import ability.ShootDiagonal;
 import javafx.animation.AnimationTimer;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ability.Ability;
-import ability.ShootCardinal;
-import ability.ShootStraight;
-
 public class GameLogic {
-    // ✅ Static instance (Singleton-like)
-    private static GameLogic instance;
+	// Static instance (Singleton-like)
+	private static GameLogic instance;
 
-    private Player player;
-    private ArrayList<Piece> enemies;
-    private ArrayList<Bullet> bullets;
-    private boolean isRunning;
+	private Player player;
+	private ArrayList<Piece> enemies;
+	private ArrayList<Bullet> bullets;
+	private boolean isRunning;
 
-    private static long count = 0;
+	private int wave; // Track the current wave
+	private int maxEnemies; // Max enemies per wave
 
-    private GameLogic() {
-        player = new Player(8.0, 15.0, 100); // Start position
-        enemies = new ArrayList<>();
-        bullets = new ArrayList<>();
-        isRunning = true;
-        spawnEnemies();
-    }
+	private GameLogic() {
+		player = new Player(8.0, 15.0, 100); // Start position
+		enemies = new ArrayList<>();
+		bullets = new ArrayList<>();
+		isRunning = true;
+		wave = 1;
+		maxEnemies = 5; // Initial number of enemies in wave 1
+		spawnEnemies(); // Spawn enemies for the first wave
+	}
 
-    // ✅ Static method to get instance
-    public static GameLogic getInstance() {
-        if (instance == null) {
-            instance = new GameLogic();
-        }
-        return instance;
-    }
+	// Static method to get instance
+	public static GameLogic getInstance() {
+		if (instance == null) {
+			instance = new GameLogic();
+		}
+		return instance;
+	}
 
-    private void spawnEnemies() {
-        Pawn enemy = new Pawn(8.0, 0.0, 20);
-        ArrayList<Ability> abilities = new ArrayList<>();
-        abilities.add(new ShootCardinal(10, 0.075));
-        enemy.setAbility(abilities);
-        enemies.add(enemy); // Example enemy
-    }
+	private void spawnEnemies() {
+		int enemiesToSpawn = wave * maxEnemies; // Scale enemies by wave number
+		for (int i = 0; i < enemiesToSpawn; i++) {
+			// Spawn a new enemy at a random position (for simplicity, we use Pawn here)
+			Enemy enemy = new Enemy(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+			ArrayList<Ability> abilities = new ArrayList<>();
+			abilities.add(new ShootCardinal(10, 0.075));
+			enemy.setAbility(abilities);
+			enemies.add(enemy); // Add enemy to the list
+		}
+	}
 
-    public void playerShoot() {
-        player.shootBullet();
-    }
+	public void playerShoot() {
+		player.shootBullet();
+	}
 
-    public void startGameLoop() {
-        new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                updateGame();
-            }
-        }.start();
-    }
+	public void startGameLoop() {
+		new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				updateGame();
+			}
+		}.start();
+	}
 
-    private void updateGame() {
-        if (!isRunning)
-            return;
-        for (Piece enemy : enemies) {
-            count++;
-            if (count >= 50) { // Adjust based on game speed
-                enemy.shootBullet();
-                count = 0;
-            }
-        }
-        Iterator<Bullet> iterator = bullets.iterator();
-        while (iterator.hasNext()) {
-            Bullet bullet = iterator.next();
-            bullet.move();
-            if (bullet.getGridY() < -1) {
-                iterator.remove();
-            }
-        }
-        checkCollisions();
-    }
+	private void updateGame() {
+		if (!isRunning || isGameOver())
+			return;
 
-    private void checkCollisions() {
-        ArrayList<Piece> deadEnemies = new ArrayList<>();
-        ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
+		// Spawn bullets for enemies every 50 ticks (adjust based on game speed)
+		for (Piece enemy : enemies) {
+			((Enemy) enemy).count();
+			if (((Enemy) enemy).getCount() >= 50) {
+				enemy.shootBullet();
+				((Enemy) enemy).resetCount();
+			}
+		}
 
-        for (Bullet bullet : bullets) {
-            if (bullet.isPlayerBullet()) {
-                for (Piece enemy : enemies) {
-                    if (Math.abs(bullet.getGridX() - enemy.getGridX()) <= 0.125
-                            && Math.abs(bullet.getGridY() - enemy.getGridY()) <= 0.125) {
-                        enemy.takeDamage(bullet.getDamage());
-                        bulletsToRemove.add(bullet);
-                        if (enemy.isDead()) {
-                            System.out.println(bullet.isPlayerBullet());
-                            deadEnemies.add(enemy);
-                        }
-                    }
-                }
-            } else {
-                if (Math.abs(bullet.getGridX() - player.getGridX()) <= 0.125
-                        && Math.abs(bullet.getGridY() - player.getGridY()) <= 0.5) {
-                    player.takeDamage(bullet.getDamage());
-                    bulletsToRemove.add(bullet);
-                    if (player.isDead()) {
-                        // Stop game
-                        isRunning = false;
-                    }
-                }
-            }
-        }
-        enemies.removeAll(deadEnemies);
-        bullets.removeAll(bulletsToRemove);
-    }
+		// Move bullets and check if they need to be removed
+		Iterator<Bullet> iterator = bullets.iterator();
+		while (iterator.hasNext()) {
+			Bullet bullet = iterator.next();
+			bullet.move();
+			if (bullet.getGridY() < -1) {
+				iterator.remove();
+			}
+		}
 
-    // **New Method**: Check if the game is over
-    public boolean isGameOver() {
-        return player.isDead(); // Return true if the player is dead
-    }
+		// Check for collisions
+		checkCollisions();
 
-    // Getters and Setters
-    public Player getPlayer() {
-        return player;
-    }
+		// Check if all enemies are defeated to transition to the next wave
+		if (enemies.isEmpty()) {
+			if (wave == 4)
+				return;// End game
+			nextWave();
+		}
+	}
 
-    public ArrayList<Piece> getEnemies() {
-        return enemies;
-    }
+	private void checkCollisions() {
+		ArrayList<Piece> deadEnemies = new ArrayList<>();
+		ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
 
-    public ArrayList<Bullet> getBullets() {
-        return bullets;
-    }
+		// Bullet vs Bullet Collision (unchanged)
+		for (int i = 0; i < bullets.size(); i++) {
+			Bullet bullet1 = bullets.get(i);
+			double tolerance = bullet1.getDirection() < 5 ? 0.125 : 0.25;
+			for (int j = i + 1; j < bullets.size(); j++) {
+				Bullet bullet2 = bullets.get(j);
+				if (bullet1.isPlayerBullet() != bullet2.isPlayerBullet()
+						&& Math.abs(bullet1.getGridX() - bullet2.getGridX()) < tolerance
+						&& Math.abs(bullet1.getGridY() - bullet2.getGridY()) < tolerance) {
+					bulletsToRemove.add(bullet1);
+					bulletsToRemove.add(bullet2);
+					break;
+				}
+			}
+		}
 
-    public boolean isRunning() {
-        return isRunning;
-    }
+		// Bullet vs Enemy Collision
+		for (Bullet bullet : bullets) {
+			double tolerance = bullet.getDirection() < 5 ? 0.125 : 0.25;
+			if (bullet.isPlayerBullet()) {
+				for (Piece enemy : enemies) {
+					double dx = bullet.getGridX() - enemy.getGridX();
+					double dy = bullet.getGridY() - enemy.getGridY() + 1;
+					double distance = Math.sqrt(dx * dx + dy * dy);
+
+					if (distance < tolerance) {
+						enemy.takeDamage(bullet.getDamage());
+						bullet.decreaseDurability();
+						if (bullet.isDestroyed()) {
+							bulletsToRemove.add(bullet);
+						}
+						if (enemy.isDead()) {
+							deadEnemies.add(enemy);
+						}
+					}
+				}
+			} else {
+				double dx = bullet.getGridX() - player.getGridX();
+				double dy = bullet.getGridY() - player.getGridY();
+				double distance = Math.sqrt(dx * dx + dy * dy);
+				if (distance < tolerance) {
+					player.takeDamage(bullet.getDamage());
+					bulletsToRemove.add(bullet);
+					if (player.isDead()) {
+						isRunning = false; // Game over
+					}
+				}
+			}
+		}
+
+		// Remove destroyed enemies and bullets
+		enemies.removeAll(deadEnemies);
+		bullets.removeAll(bulletsToRemove);
+	}
+
+	// Transition to the next wave
+	private void nextWave() {
+		wave++; // Increase wave number
+		spawnEnemies(); // Spawn enemies for the next wave
+	}
+
+	// **New Method**: Check if the game is over
+	public boolean isGameOver() {
+		return player.isDead(); // Return true if the player is dead
+	}
+
+	// Getters and Setters
+	public Player getPlayer() {
+		return player;
+	}
+
+	public ArrayList<Piece> getEnemies() {
+		return enemies;
+	}
+
+	public ArrayList<Bullet> getBullets() {
+		return bullets;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setWave(int wave) {
+		this.wave = wave;
+	}
 }

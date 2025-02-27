@@ -8,6 +8,7 @@ public class Bullet extends Entity implements Relocatable {
 	private double speed;
 	private int direction;
 	private boolean isPlayerBullet;
+	 private int durability = 1;
 
 	public Bullet(Double posX, Double posY, int damage, double speed, int direction , boolean isPlayerBullet) {
 		super(posX, posY);
@@ -60,6 +61,14 @@ public class Bullet extends Entity implements Relocatable {
 		}
 	}
 
+	public void decreaseDurability() {
+        durability--;
+    }
+
+    public boolean isDestroyed() {
+        return durability <= 0;
+    }
+	
 	@Override
 	public void moveUp() {
 		// TODO Auto-generated method stub
