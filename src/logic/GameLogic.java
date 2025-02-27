@@ -25,12 +25,12 @@ public class GameLogic {
 	private int maxEnemies; // Max enemies per wave
 
 	private GameLogic() {
-		player = new Player(8.0, 15.0, 100); // Start position
+		player = new Player(8.0, 15.0, 10); // Start position
 		enemies = new ArrayList<>();
 		bullets = new ArrayList<>();
 		isRunning = true;
 		wave = 1;
-		maxEnemies = 5; // Initial number of enemies in wave 1
+		maxEnemies = 3; // Initial number of enemies in wave 1
 		spawnEnemies(); // Spawn enemies for the first wave
 	}
 
@@ -74,7 +74,7 @@ public class GameLogic {
 		// Spawn bullets for enemies every 50 ticks (adjust based on game speed)
 		for (Piece enemy : enemies) {
 			((Enemy) enemy).count();
-			if (((Enemy) enemy).getCount() >= 50) {
+			if (((Enemy) enemy).getCount() >= 150) {
 				enemy.shootBullet();
 				((Enemy) enemy).resetCount();
 			}
@@ -166,7 +166,7 @@ public class GameLogic {
 		spawnEnemies(); // Spawn enemies for the next wave
 	}
 
-	// **New Method**: Check if the game is over
+	// Check if the game is over
 	public boolean isGameOver() {
 		return player.isDead(); // Return true if the player is dead
 	}

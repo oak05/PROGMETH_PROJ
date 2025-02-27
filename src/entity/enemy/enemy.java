@@ -17,15 +17,15 @@ public class Enemy extends Piece {
 		// TODO Auto-generated constructor stub
 		super(x, y, hp);
 	}
-	
+
 	public void count() {
 		count++;
 	}
-	
+
 	public int getCount() {
 		return count;
 	}
-	
+
 	public void resetCount() {
 		this.count = 0;
 	}

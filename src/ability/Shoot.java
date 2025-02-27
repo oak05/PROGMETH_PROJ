@@ -10,18 +10,19 @@ import entity.player.Player;
 import gui.GameGUI;
 
 public abstract class Shoot implements Ability {
-	
+
 	private int bulletDamage;
 	private double bulletSpeed;
 	protected boolean isPlayer;
-	
+	protected double Y;
+
 	// Constructor
-	
+
 	public Shoot(int bulletDamage, double bulletSpeed) {
 		setBulletDamage(bulletDamage);
 		setBulletSpeed(bulletSpeed);
 	}
-	
+
 	// Methods
 
 	@Override
@@ -29,10 +30,10 @@ public abstract class Shoot implements Ability {
 		// TODO Auto-generated method stub
 		if (entity instanceof Piece) {
 			createBullet((Piece) entity);
-        }
+		}
 
 	}
-	
+
 	public abstract ArrayList<Bullet> createBullet(Piece shooter);
 
 	// Getters & Setters
@@ -52,5 +53,5 @@ public abstract class Shoot implements Ability {
 	public void setBulletSpeed(double bulletSpeed) {
 		this.bulletSpeed = bulletSpeed <= 0 ? 1 : bulletSpeed;
 	}
-	
+
 }

@@ -45,26 +45,26 @@ public abstract class Piece extends Entity implements Relocatable {
 	public void updatePlayerPosition() {
 		Platform.runLater(() -> {
 			double targetX = getGridX() * GameGUI.getTileSize();
-	        double targetY = getGridY() * GameGUI.getTileSize();
-	        
-	        // Smooth effect
-	        TranslateTransition moveAnimation = new TranslateTransition(Duration.millis(25), imageView);
-	        moveAnimation.setToX(targetX);
-	        moveAnimation.setToY(targetY);
-	        moveAnimation.setInterpolator(Interpolator.EASE_OUT);
+			double targetY = getGridY() * GameGUI.getTileSize();
 
-	        // bounce effect
-	        ScaleTransition bounce = new ScaleTransition(Duration.millis(50), imageView);
-	        bounce.setFromX(1.0);
-	        bounce.setFromY(1.0);
-	        bounce.setToX(1.1);
-	        bounce.setToY(0.9);
-	        bounce.setAutoReverse(true);
-	        bounce.setCycleCount(2);
+			// Smooth effect
+			TranslateTransition moveAnimation = new TranslateTransition(Duration.millis(25), imageView);
+			moveAnimation.setToX(targetX);
+			moveAnimation.setToY(targetY);
+			moveAnimation.setInterpolator(Interpolator.EASE_OUT);
 
-	        ParallelTransition animation = new ParallelTransition(moveAnimation, bounce);
-	        animation.play();
-	    });
+			// bounce effect
+			ScaleTransition bounce = new ScaleTransition(Duration.millis(50), imageView);
+			bounce.setFromX(1.0);
+			bounce.setFromY(1.0);
+			bounce.setToX(1.1);
+			bounce.setToY(0.9);
+			bounce.setAutoReverse(true);
+			bounce.setCycleCount(2);
+
+			ParallelTransition animation = new ParallelTransition(moveAnimation, bounce);
+			animation.play();
+		});
 	}
 
 	@Override

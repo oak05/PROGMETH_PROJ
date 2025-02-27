@@ -35,6 +35,7 @@ public class GameGUI extends Application {
 	private static final int WIDTH = BOARD_SIZE * TILE_SIZE;
 	private static final int HEIGHT = BOARD_SIZE * TILE_SIZE;
 
+	private Stage primaryStage;
 	private GameLogic game;
 	private Canvas canvas;
 	private StackPane root;
@@ -43,6 +44,7 @@ public class GameGUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		// Main Menu Setup
+		this.primaryStage = primaryStage;
 		showMainMenu(primaryStage);
 	}
 
@@ -64,7 +66,7 @@ public class GameGUI extends Application {
 		Button startButton = new Button("Start Game");
 		Button quitButton = new Button("Quit");
 
-		startButton.setOnAction(e -> showWaveSelectionScreen(primaryStage));
+		startButton.setOnAction(e -> showLevelSelectionScreen(primaryStage));
 
 		quitButton.setOnAction(e -> System.exit(0));
 		Region spacer = new Region();
@@ -81,7 +83,7 @@ public class GameGUI extends Application {
 	}
 
 	// Show the wave selection screen after clicking "Start Game"
-	private void showWaveSelectionScreen(Stage primaryStage) {
+	private void showLevelSelectionScreen(Stage primaryStage) {
 		VBox levelSelectionLayout = new VBox(20);
 		levelSelectionLayout.setAlignment(Pos.CENTER);
 
@@ -163,12 +165,14 @@ public class GameGUI extends Application {
 	}
 
 	private void render() {
-		new AnimationTimer() {
+		AnimationTimer gameLoop = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
 				if (game.isGameOver()) {
+					primaryStage.close();
 					stop(); // Stop the game loop
 					showGameOverScreen(); // Show the game over screen
+					return;
 				}
 				gc.clearRect(0, 0, WIDTH, HEIGHT);
 				drawChessBoard();
@@ -176,7 +180,8 @@ public class GameGUI extends Application {
 				handleShooting(now); // Handle shooting with cooldown
 				root.layout();
 			}
-		}.start();
+		};
+		gameLoop.start();
 	}
 
 	// Draw a proper 16x16 chess board
@@ -193,7 +198,7 @@ public class GameGUI extends Application {
 		}
 	}
 
-	// 🔫 Draw player, enemies, bullets
+	// Draw player, enemies, bullets
 	private void drawEntities() {
 
 		gc.setFill(Color.RED);
@@ -215,14 +220,26 @@ public class GameGUI extends Application {
 		}
 	}
 
+	// GameOver screen
 	private void showGameOverScreen() {
+		Stage gameOverStage = new Stage();
 		Label gameOverLabel = new Label("Game Over");
 		gameOverLabel.setFont(new Font("Arial", 50));
 		gameOverLabel.setTextFill(Color.RED);
 
 		Button restart = new Button("Restart");
 
+		restart.setOnAction(e -> {
+			gameOverStage.close();
+			resetGameState();
+
+			// Create a new primary stage since the old one was closed
+			Stage newStage = new Stage();
+			showLevelSelectionScreen(newStage);
+		});
+
 		Button quit = new Button("Quit");
+		quit.setOnAction(e -> System.exit(0));
 
 		VBox layout = new VBox(20);
 		layout.setAlignment(Pos.CENTER);
@@ -234,14 +251,31 @@ public class GameGUI extends Application {
 		layout.setBackground(new Background(bg));
 		layout.getChildren().addAll(gameOverLabel, restart, quit);
 
-		Scene gameOverScene = new Scene(layout, 400, 300);
-		Stage gameOverStage = new Stage();
+		Scene gameOverScene = new Scene(layout, 680, 680);
 		gameOverStage.setScene(gameOverScene);
 		gameOverStage.setTitle("Game Over");
 		gameOverStage.show();
 	}
 
-	// Getter & Setter
+	private void resetGameState() {
+		// Properly reset the game state
+		GameLogic gameLogic = GameLogic.getInstance();
+
+		// Reset player position and properties
+		Player player = gameLogic.getPlayer();
+		player.setGridX(8.0); // Put player back to starting position
+		player.setGridY(15.0); // Adjust to your starting position
+		player.setHealth(10); // You need to implement this method in Player class
+
+		// Clear game collections
+		gameLogic.getEnemies().clear();
+		gameLogic.getBullets().clear();
+
+		gameLogic.setWave(1);
+
+		setLastShootTime(0);
+		setSpacebarPressed(false);
+	}
 
 	private void handleShooting(long now) {
 		if (isSpacebarPressed && now - lastShootTime >= SHOOT_COOLDOWN * 1_000_000) { // Convert ms to ns
@@ -249,6 +283,8 @@ public class GameGUI extends Application {
 			lastShootTime = now; // Update cooldown time
 		}
 	}
+
+	// Getter & Setter
 
 	public static boolean isSpacebarPressed() {
 		return isSpacebarPressed;
