@@ -1,14 +1,25 @@
 package entity.base;
 
+import gui.GameGUI;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class Bullet extends Entity implements Relocatable {
 	private int damage;
 	private double speed;
 	private int direction;
 	private boolean isPlayerBullet;
-	 private int durability = 1;
+	private int durability = 1;
+	private ImageView imageView;
 
 	public Bullet(Double posX, Double posY, int damage, double speed, int direction , boolean isPlayerBullet) {
 		super(posX, posY);
@@ -16,9 +27,23 @@ public class Bullet extends Entity implements Relocatable {
 		setSpeed(speed);
 		setDirection(direction);
 		setPlayerBullet(isPlayerBullet);
+		
+		// Set bullet image
+        this.imageView = new ImageView(new Image(getClass().getResourceAsStream("/Bullet/02.png")));
+        this.imageView.setManaged(false);
+        this.imageView.setFitWidth(GameGUI.getTileSize() * 1.5);
+        this.imageView.setFitHeight(GameGUI.getTileSize() * 1.5);
+        this.updateBulletPosition();
 	}
 
 	// Method
+	
+	public void updateBulletPosition() {
+		Platform.runLater(() -> {
+            this.imageView.setX( ( this.gridX ) * GameGUI.getTileSize());
+            this.imageView.setY( ( this.gridY ) * GameGUI.getTileSize());
+		});
+	}
 
 	public void move() {	
 		switch (this.direction) {
@@ -130,5 +155,8 @@ public class Bullet extends Entity implements Relocatable {
 	public boolean isOffScreen() {
 		return gridY <= 0 || gridY >= 15;
 	}
+	public ImageView getImageView() {
+        return imageView;
+    }
 
 }

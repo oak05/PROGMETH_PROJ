@@ -4,10 +4,13 @@ import entity.base.*;
 import entity.enemy.Enemy;
 import entity.piece.*;
 import entity.player.Player;
+import gui.GameGUI;
 import ability.Ability;
 import ability.ShootCardinal;
 import ability.ShootDiagonal;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +34,7 @@ public class GameLogic {
 		bullets = new ArrayList<>();
 		isRunning = true;
 		wave = 1;
-		maxEnemies = 3; // Initial number of enemies in wave 1
+		maxEnemies = 1; // Initial number of enemies in wave 1
 		spawnEnemies(); // Spawn enemies for the first wave
 	}
 
@@ -42,16 +45,50 @@ public class GameLogic {
 		}
 		return instance;
 	}
+	
+	public static void setInstance(GameLogic instance) {
+		GameLogic.instance = instance;
+	}
 
 	private void spawnEnemies() {
-		int enemiesToSpawn = wave * maxEnemies; // Scale enemies by wave number
+		int enemiesToSpawn = ( 6 - wave ) * maxEnemies; // Scale enemies by wave number
 		for (int i = 0; i < enemiesToSpawn; i++) {
 			// Spawn a new enemy at a random position (for simplicity, we use Pawn here)
-			Enemy enemy = new Enemy(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
-			ArrayList<Ability> abilities = new ArrayList<>();
-			abilities.add(new ShootCardinal(10, 0.075));
-			enemy.setAbility(abilities);
-			enemies.add(enemy); // Add enemy to the list
+			
+			
+			
+			switch(wave) {
+				case 1:
+					Pawn enemy = new Pawn(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
+					enemies.add(enemy);
+					break;
+				case 2:
+					Rook enemy2 = new Rook(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy2.getImageView()));
+					enemies.add(enemy2);
+					break;
+				case 3:
+					Bishop enemy3 = new Bishop(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy3.getImageView()));
+					enemies.add(enemy3);
+					break;
+				case 4:
+					Knight enemy4 = new Knight(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy4.getImageView()));
+					enemies.add(enemy4);
+					break;
+				case 5:
+					Queen enemy5 = new Queen(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy5.getImageView()));
+					enemies.add(enemy5);
+					King enemy6 = new King(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy6.getImageView()));
+					enemies.add(enemy6);
+					break;
+					
+			}
+			
 		}
 	}
 
@@ -73,10 +110,10 @@ public class GameLogic {
 			return;
 		// Spawn bullets for enemies every 50 ticks (adjust based on game speed)
 		for (Piece enemy : enemies) {
-			((Enemy) enemy).count();
-			if (((Enemy) enemy).getCount() >= 150) {
+			enemy.count();
+			if (enemy.getCount() >= 150) {
 				enemy.shootBullet();
-				((Enemy) enemy).resetCount();
+				enemy.resetCount();
 			}
 		}
 
@@ -87,6 +124,7 @@ public class GameLogic {
 			bullet.move();
 			if (bullet.getGridY() < -1) {
 				iterator.remove();
+				Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet.getImageView()));
 			}
 		}
 
@@ -95,7 +133,7 @@ public class GameLogic {
 
 		// Check if all enemies are defeated to transition to the next wave
 		if (enemies.isEmpty()) {
-			if (wave == 4) {
+			if (wave == 5) {
 				this.isRunning = false;
 				return;// End game
 				}
@@ -118,6 +156,8 @@ public class GameLogic {
 						&& Math.abs(bullet1.getGridY() - bullet2.getGridY()) < tolerance) {
 					bulletsToRemove.add(bullet1);
 					bulletsToRemove.add(bullet2);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet1.getImageView()));
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet2.getImageView()));
 					break;
 				}
 			}
@@ -137,9 +177,11 @@ public class GameLogic {
 						bullet.decreaseDurability();
 						if (bullet.isDestroyed()) {
 							bulletsToRemove.add(bullet);
+							Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet.getImageView()));
 						}
 						if (enemy.isDead()) {
 							deadEnemies.add(enemy);
+							Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(enemy.getImageView()));
 						}
 					}
 				}
@@ -150,6 +192,7 @@ public class GameLogic {
 				if (distance < tolerance) {
 					player.takeDamage(bullet.getDamage());
 					bulletsToRemove.add(bullet);
+					Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet.getImageView()));
 					if (player.isDead()) {
 						isRunning = false; // Game over
 					}
@@ -171,6 +214,7 @@ public class GameLogic {
 	private void nextWave() {
 		wave++; // Increase wave number
 		spawnEnemies(); // Spawn enemies for the next wave
+		System.out.println("Wave : " + wave);
 	}
 
 	// Check if the game is over
@@ -179,7 +223,7 @@ public class GameLogic {
 	}
 	
 	public boolean isGameWon() {
-	    return enemies.isEmpty() && wave == 4; // All enemies defeated
+	    return enemies.isEmpty() && wave == 5; // All enemies defeated
 	}
 
 

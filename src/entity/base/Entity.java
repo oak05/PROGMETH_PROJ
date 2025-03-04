@@ -1,30 +1,30 @@
 package entity.base;
 
 public abstract class Entity {
-	protected Double gridX, gridY;
+	protected double gridX, gridY;
 
 	// Constructor
 
-	public Entity(Double x, Double y) {
+	public Entity(double x, double y) {
 		this.setGridX(x);
 		this.setGridY(y);
 	}
 
 	// Getters & Setters
 
-	public Double getGridX() {
+	public double getGridX() {
 		return gridX;
 	}
 
-	public void setGridX(Double gridX) {
+	public void setGridX(double gridX) {
 		this.gridX = gridX < 0 ? 0 : gridX;
 	}
 
-	public Double getGridY() {
+	public double getGridY() {
 		return gridY;
 	}
 
-	public void setGridY(Double gridY) {
+	public void setGridY(double gridY) {
 		this.gridY = gridY < 0 ? 0 : gridY;
 	}
 

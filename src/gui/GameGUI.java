@@ -35,9 +35,9 @@ public class GameGUI extends Application {
 	private static final int WIDTH = BOARD_SIZE * TILE_SIZE;
 	private static final int HEIGHT = BOARD_SIZE * TILE_SIZE;
 
-	private GameLogic game;
+	private static GameLogic game;
 	private Canvas canvas;
-	private StackPane root;
+	private static StackPane root;
 	private GraphicsContext gc;
 
 	@Override
@@ -96,6 +96,7 @@ public class GameGUI extends Application {
 		startGameButton.setOnAction(e -> {
 			String selectedLevel = levelSelectionComboBox.getValue();
 			int level = levelSelectionComboBox.getSelectionModel().getSelectedIndex() + 1;
+			System.out.println(level);
 
 			// Set the wave in GameLogic before starting the game
 			GameLogic.getInstance().setWave(level);
@@ -168,11 +169,13 @@ public class GameGUI extends Application {
 			public void handle(long now) {
 				if (game.isGameOver()) {
 					stop(); // Stop the game loop
+					game.setInstance(null);
 					showGameOverScreen(primaryStage); // Show the game over screen
 					return;
 				} 
 				else if (game.isGameWon()) {
 					stop();
+					game.setInstance(null);
 					showMainMenu(primaryStage);
 					return;
 				}
@@ -200,26 +203,12 @@ public class GameGUI extends Application {
 		}
 	}
 
-	// Draw player, enemies, bullets
+	// Draw enemies, bullets
 	private void drawEntities() {
 
-		gc.setFill(Color.RED);
-		for (Piece enemy : game.getEnemies()) {
-			gc.fillRect(enemy.getGridX() * TILE_SIZE, enemy.getGridY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-		}
-
-		gc.setFill(Color.YELLOW);
 		for (Bullet bullet : game.getBullets()) {
-			double bulletSize = TILE_SIZE / 2.5;
-			double bulletY;
-			if (bullet.isPlayerBullet()) {
-				bulletY = (bullet.getGridY() * TILE_SIZE + TILE_SIZE / 2 - bulletSize / 2) + 1 * TILE_SIZE;
-			} else {
-				bulletY = (bullet.getGridY() * TILE_SIZE + TILE_SIZE / 2 - bulletSize / 2);
-			}
-			gc.fillOval(bullet.getGridX() * TILE_SIZE + TILE_SIZE / 2 - bulletSize / 2, bulletY, bulletSize,
-					bulletSize);
-		}
+	        bullet.updateBulletPosition(); // Move the bullet
+	    }
 	}
 
 	// GameOver screen
@@ -309,10 +298,6 @@ public class GameGUI extends Application {
 		return game;
 	}
 
-	public void setGame(GameLogic game) {
-		this.game = game;
-	}
-
 	public Canvas getCanvas() {
 		return canvas;
 	}
@@ -344,4 +329,10 @@ public class GameGUI extends Application {
 	public static int getHeight() {
 		return HEIGHT;
 	}
+
+	public static StackPane getRoot() {
+		return root;
+	}
+	
+	
 }

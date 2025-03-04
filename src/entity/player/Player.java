@@ -33,14 +33,12 @@ public class Player extends Piece {
 		this.ability.add(new ShootCardinal(100, 0.075));
 
 		// Player Display
-		int tileSize = GameGUI.getTileSize();
 		this.imageView = new ImageView(
 				new Image(getClass().getResourceAsStream("/PNGs/With Shadow/1024px/w_king_png_shadow_1024px.png")));
 		this.imageView.setManaged(false);
 		this.imageView.setFitWidth(tileSize);
 		this.imageView.setFitHeight(tileSize);
 		updatePlayerPosition();
-		System.out.println(this.imageView.getX() + "," + this.imageView.getY());
 	}
 
 	// Getters & Setters
