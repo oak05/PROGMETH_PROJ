@@ -138,14 +138,22 @@ public class GameGUI extends Application {
 
 		// Handle player input
 		scene.setOnKeyPressed(event -> {
-			if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.W) {
+			if (event.getCode() == KeyCode.W) {
 				player.moveUp();
-			} else if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.S) {
+			} else if (event.getCode() == KeyCode.S) {
 				player.moveDown();
-			} else if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.A) {
+			} else if (event.getCode() == KeyCode.A) {
 				player.moveLeft();
-			} else if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D) {
+			} else if (event.getCode() == KeyCode.D) {
 				player.moveRight();
+			} else if (event.getCode() == KeyCode.UP) {
+				
+			} else if (event.getCode() == KeyCode.DOWN) {
+				
+			} else if (event.getCode() == KeyCode.LEFT) {
+				
+			} else if (event.getCode() == KeyCode.RIGHT) {
+				
 			}
 			if (event.getCode() == KeyCode.SPACE) {
 				isSpacebarPressed = true;
@@ -172,11 +180,10 @@ public class GameGUI extends Application {
 					game.setInstance(null);
 					showGameOverScreen(primaryStage); // Show the game over screen
 					return;
-				} 
-				else if (game.isGameWon()) {
+				} else if (game.isGameWon()) {
 					stop();
 					game.setInstance(null);
-					showMainMenu(primaryStage);
+					showGameWonScreen(primaryStage);
 					return;
 				}
 				gc.clearRect(0, 0, WIDTH, HEIGHT);
@@ -212,7 +219,6 @@ public class GameGUI extends Application {
 	}
 
 	// GameOver screen
-	// GameOver screen
 	private void showGameOverScreen(Stage primaryStage) {
 		Label gameOverLabel = new Label("Game Over");
 		gameOverLabel.setFont(new Font("Arial", 50));
@@ -243,6 +249,38 @@ public class GameGUI extends Application {
 		primaryStage.setTitle("Game Over");
 		primaryStage.show();
 	}
+	
+	// GameOver screen
+		private void showGameWonScreen(Stage primaryStage) {
+			Label gameOverLabel = new Label("Game Won");
+			gameOverLabel.setFont(new Font("Arial", 50));
+			gameOverLabel.setTextFill(Color.YELLOW);
+
+			Button restart = new Button("Restart");
+			restart.setOnAction(e -> {
+				resetGameState();
+				// Use the same primary stage instead of creating a new one
+				showLevelSelectionScreen(primaryStage);
+			});
+
+			Button quit = new Button("Quit");
+			quit.setOnAction(e -> System.exit(0));
+
+			VBox layout = new VBox(20);
+			layout.setAlignment(Pos.CENTER);
+
+			Image bgImage = new Image(getClass().getResourceAsStream("/gameOverBg.png"));
+			BackgroundImage bg = new BackgroundImage(bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+					BackgroundPosition.CENTER, new BackgroundSize(100, 100, true, true, false, true));
+
+			layout.setBackground(new Background(bg));
+			layout.getChildren().addAll(gameOverLabel, restart, quit);
+
+			Scene gameOverScene = new Scene(layout, WIDTH, WIDTH);
+			primaryStage.setScene(gameOverScene);
+			primaryStage.setTitle("Game Over");
+			primaryStage.show();
+		}
 
 	private void resetGameState() {
 		// Properly reset the game state
