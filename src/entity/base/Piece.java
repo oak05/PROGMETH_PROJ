@@ -18,7 +18,6 @@ public abstract class Piece extends Entity implements Relocatable {
 
 	public static final int tileSize = GameGUI.getTileSize();
 	private static final int GRID_BOUNDARY = GameGUI.getBoardSize() - 1;
-	private int count;
 	private int health;
 	private boolean isDead;
 	protected ImageView imageView;
@@ -142,16 +141,5 @@ public abstract class Piece extends Entity implements Relocatable {
 
 	public void setImageView(ImageView imageView) {
 		this.imageView = imageView;
-	}
-	public void count() {
-		count++;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void resetCount() {
-		this.count = 0;
 	}
 }

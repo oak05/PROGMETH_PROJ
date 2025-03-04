@@ -35,7 +35,6 @@ public class GameGUI extends Application {
 	private static final int WIDTH = BOARD_SIZE * TILE_SIZE;
 	private static final int HEIGHT = BOARD_SIZE * TILE_SIZE;
 
-	private static GameLogic game;
 	private Canvas canvas;
 	private static StackPane root;
 	private GraphicsContext gc;
@@ -118,11 +117,10 @@ public class GameGUI extends Application {
 	}
 
 	public void gameStart(Stage primaryStage) {
-		game = GameLogic.getInstance();
 		canvas = new Canvas(WIDTH, HEIGHT);
 		gc = canvas.getGraphicsContext2D();
 
-		Player player = game.getPlayer();
+		Player player = GameLogic.getInstance().getPlayer();
 		// Position player properly on screen
 		player.getPlayerImageView().setTranslateX(player.getGridX() * TILE_SIZE);
 		player.getPlayerImageView().setTranslateY(player.getGridY() * TILE_SIZE);
@@ -166,7 +164,8 @@ public class GameGUI extends Application {
 		});
 
 		// Start game loop
-		game.startGameLoop();
+		GameLogic.getInstance().spawnEnemies();
+		GameLogic.getInstance().startGameLoop();
 		render(primaryStage);
 
 	}
@@ -175,14 +174,12 @@ public class GameGUI extends Application {
 		AnimationTimer gameLoop = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				if (game.isGameOver()) {
+				if (GameLogic.getInstance().isGameOver()) {
 					stop(); // Stop the game loop
-					game.setInstance(null);
 					showGameOverScreen(primaryStage); // Show the game over screen
 					return;
-				} else if (game.isGameWon()) {
+				} else if (GameLogic.getInstance().isGameWon()) {
 					stop();
-					game.setInstance(null);
 					showGameWonScreen(primaryStage);
 					return;
 				}
@@ -213,7 +210,7 @@ public class GameGUI extends Application {
 	// Draw enemies, bullets
 	private void drawEntities() {
 
-		for (Bullet bullet : game.getBullets()) {
+		for (Bullet bullet : GameLogic.getInstance().getBullets()) {
 	        bullet.updateBulletPosition(); // Move the bullet
 	    }
 	}
@@ -284,28 +281,25 @@ public class GameGUI extends Application {
 
 	private void resetGameState() {
 		// Properly reset the game state
-		GameLogic gameLogic = GameLogic.getInstance();
-
+		GameLogic.getInstance().reset();
+		
 		// Reset player position and properties
-		Player player = gameLogic.getPlayer();
+		Player player = GameLogic.getInstance().getPlayer();
 		player.setGridX(8.0); // Put player back to starting position
 		player.setGridY(15.0); // Adjust to your starting position
 		player.setHealth(10); // You need to implement this method in Player class
 
 		// Clear game collections
-		gameLogic.getEnemies().clear();
-		gameLogic.getBullets().clear();
-
-		gameLogic.setWave(1);
-
-		gameLogic.reset();
+		GameLogic.getInstance().getEnemies().clear();
+		GameLogic.getInstance().getBullets().clear();
+	
 		setLastShootTime(0);
 		setSpacebarPressed(false);
 	}
 
 	private void handleShooting(long now) {
 		if (isSpacebarPressed && now - lastShootTime >= SHOOT_COOLDOWN * 1_000_000) { // Convert ms to ns
-			game.getPlayer().shootBullet(); // Player shoots
+			GameLogic.getInstance().getPlayer().shootBullet(); // Player shoots
 			lastShootTime = now; // Update cooldown time
 		}
 	}
@@ -330,10 +324,6 @@ public class GameGUI extends Application {
 
 	public static long getShootCooldown() {
 		return SHOOT_COOLDOWN;
-	}
-
-	public GameLogic getGame() {
-		return game;
 	}
 
 	public Canvas getCanvas() {

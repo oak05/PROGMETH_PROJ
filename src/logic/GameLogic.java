@@ -35,7 +35,6 @@ public class GameLogic {
 		isRunning = true;
 		wave = 1;
 		maxEnemies = 1; // Initial number of enemies in wave 1
-		spawnEnemies(); // Spawn enemies for the first wave
 	}
 
 	// Static method to get instance
@@ -50,20 +49,26 @@ public class GameLogic {
 		GameLogic.instance = instance;
 	}
 
-	private void spawnEnemies() {
+	public void spawnEnemies() {
 		int enemiesToSpawn = wave * maxEnemies; // Scale enemies by wave number
-		Piece enemy = null;
 		for (int i = 0; i < enemiesToSpawn; i++) {
 			if (wave == 1) {
-				enemy = new Queen(enemypositions[i][1], enemypositions[i][0], 5);
+				Queen enemy = new Queen(enemypositions[i][1], enemypositions[i][0], 5);
+				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
+				enemies.add(enemy);
 			} else if (wave == 2) {
-				enemy = new Rook(enemypositions[i][1], enemypositions[i][0], 5);
+				Rook enemy = new Rook(enemypositions[i][1], enemypositions[i][0], 5);
+				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
+				enemies.add(enemy);
 			} else if (wave == 3) {
-				enemy = new Bishop(enemypositions[i][1], enemypositions[i][0], 5);
+				Bishop enemy = new Bishop(enemypositions[i][1], enemypositions[i][0], 5);
+				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
+				enemies.add(enemy);
 			} else if (wave == 4) {
-				enemy = new Pawn(enemypositions[i][1], enemypositions[i][0], 3);
+				Pawn enemy = new Pawn(enemypositions[i][1], enemypositions[i][0], 3);
+				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
+				enemies.add(enemy);
 			}
-			enemies.add(enemy); // Add enemy to the list
 
 		}
 	}
@@ -109,7 +114,7 @@ public class GameLogic {
 
 		// Check if all enemies are defeated to transition to the next wave
 		if (enemies.isEmpty()) {
-			if (wave == 5) {
+			if (wave == 4) {
 				this.isRunning = false;
 				return;// End game
 			}
