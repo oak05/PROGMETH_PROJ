@@ -1,7 +1,6 @@
 package logic;
 
 import entity.base.*;
-import entity.enemy.Enemy;
 import entity.piece.*;
 import entity.player.Player;
 import ability.Ability;
@@ -23,10 +22,11 @@ public class GameLogic {
 
 	private int wave; // Track the current wave
 	private int maxEnemies; // Max enemies per wave
-	private int[][] enemypositions = {{},{},{},{}};
+	private double[][] enemypositions = { { 3, 2 }, { 1, 8 }, { 3, 14 }, { 13, 11 }, { 13, 5 }, { 9, 1 }, { 9, 15 },
+			{ 15, 15 }, { 15, 1 }, { 1, 5 }, { 1, 11 }, { 15, 8 } };
 
 	public GameLogic() {
-		player = new Player(8.0, 15.0, 1000); // Start position
+		player = new Player(8.0, 15.0, 10000); // Start position
 		enemies = new ArrayList<>();
 		bullets = new ArrayList<>();
 		isRunning = true;
@@ -45,13 +45,19 @@ public class GameLogic {
 
 	private void spawnEnemies() {
 		int enemiesToSpawn = wave * maxEnemies; // Scale enemies by wave number
+		Piece enemy = null;
 		for (int i = 0; i < enemiesToSpawn; i++) {
-			// Spawn a new enemy at a random position (for simplicity, we use Pawn here)
-			Enemy enemy = new Enemy(Math.floor(Math.random() * 17), Math.floor(Math.random() * 17), 20);
-			ArrayList<Ability> abilities = new ArrayList<>();
-			abilities.add(new ShootCardinal(10, 0.075));
-			enemy.setAbility(abilities);
+			if (wave == 1) {
+				enemy = new Queen(enemypositions[i][1], enemypositions[i][0], 5);
+			} else if (wave == 2) {
+				enemy = new Rook(enemypositions[i][1], enemypositions[i][0], 5);
+			} else if (wave == 3) {
+				enemy = new Bishop(enemypositions[i][1], enemypositions[i][0], 5);
+			} else if (wave == 4) {
+				enemy = new Pawn(enemypositions[i][1], enemypositions[i][0], 3);
+			}
 			enemies.add(enemy); // Add enemy to the list
+
 		}
 	}
 
@@ -73,10 +79,10 @@ public class GameLogic {
 			return;
 		// Spawn bullets for enemies every 50 ticks (adjust based on game speed)
 		for (Piece enemy : enemies) {
-			((Enemy) enemy).count();
-			if (((Enemy) enemy).getCount() >= 150) {
+			enemy.count();
+			if (enemy.getCount() >= 150) {
 				enemy.shootBullet();
-				((Enemy) enemy).resetCount();
+				enemy.resetCount();
 			}
 		}
 
@@ -98,7 +104,7 @@ public class GameLogic {
 			if (wave == 4) {
 				this.isRunning = false;
 				return;// End game
-				}
+			}
 			nextWave();
 		}
 	}
@@ -107,7 +113,7 @@ public class GameLogic {
 		ArrayList<Piece> deadEnemies = new ArrayList<>();
 		ArrayList<Bullet> bulletsToRemove = new ArrayList<>();
 
-		// Bullet vs Bullet Collision (unchanged)
+		// Bullet vs Bullet Collision
 		for (int i = 0; i < bullets.size(); i++) {
 			Bullet bullet1 = bullets.get(i);
 			double tolerance = bullet1.getDirection() < 5 ? 0.125 : 0.25;
@@ -177,11 +183,10 @@ public class GameLogic {
 	public boolean isGameOver() {
 		return player.isDead(); // Return true if the player is dead
 	}
-	
-	public boolean isGameWon() {
-	    return enemies.isEmpty() && wave == 4; // All enemies defeated
-	}
 
+	public boolean isGameWon() {
+		return enemies.isEmpty() && wave == 4; // All enemies defeated
+	}
 
 	// Getters and Setters
 	public Player getPlayer() {

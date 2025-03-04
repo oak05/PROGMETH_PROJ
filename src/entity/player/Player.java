@@ -28,10 +28,8 @@ public class Player extends Piece {
 
 		// Player Logic
 		super(x, y, hp);
-//		this.ability.add(new ShootStraight(10, 0.075));
-		this.ability.add(new ShootDiagonal(100, 0.075));
+//		this.ability.add(new ShootStraight(1, 0.075));
 		this.ability.add(new ShootCardinal(100, 0.075));
-
 		// Player Display
 		int tileSize = GameGUI.getTileSize();
 		this.imageView = new ImageView(

@@ -21,6 +21,7 @@ public abstract class Piece extends Entity implements Relocatable {
 	private boolean isDead;
 	protected ImageView imageView;
 	protected ArrayList<Ability> ability;
+	private int count = 0;
 
 	public Piece(Double x, Double y, int hp) {
 		super(x, y);
@@ -93,6 +94,18 @@ public abstract class Piece extends Entity implements Relocatable {
 		if (gridX < GRID_BOUNDARY)
 			gridX++;
 		updatePlayerPosition();
+	}
+	
+	public void count() {
+		count++;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void resetCount() {
+		this.count = 0;
 	}
 
 	// Getters & Setters
