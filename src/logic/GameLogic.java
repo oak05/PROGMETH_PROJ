@@ -23,9 +23,10 @@ public class GameLogic {
 
 	private int wave; // Track the current wave
 	private int maxEnemies; // Max enemies per wave
+	private int[][] enemypositions = {{},{},{},{}};
 
-	private GameLogic() {
-		player = new Player(8.0, 15.0, 10); // Start position
+	public GameLogic() {
+		player = new Player(8.0, 15.0, 1000); // Start position
 		enemies = new ArrayList<>();
 		bullets = new ArrayList<>();
 		isRunning = true;
@@ -70,7 +71,6 @@ public class GameLogic {
 	private void updateGame() {
 		if (!isRunning || isGameOver())
 			return;
-
 		// Spawn bullets for enemies every 50 ticks (adjust based on game speed)
 		for (Piece enemy : enemies) {
 			((Enemy) enemy).count();
@@ -95,8 +95,10 @@ public class GameLogic {
 
 		// Check if all enemies are defeated to transition to the next wave
 		if (enemies.isEmpty()) {
-			if (wave == 4)
+			if (wave == 4) {
+				this.isRunning = false;
 				return;// End game
+				}
 			nextWave();
 		}
 	}
@@ -160,7 +162,12 @@ public class GameLogic {
 		bullets.removeAll(bulletsToRemove);
 	}
 
-	// Transition to the next wave
+	public void reset() {
+//	    isRunning = true;   // make sure the game loop will run again
+		instance = new GameLogic();
+	}
+
+	// Transition to the next waves
 	private void nextWave() {
 		wave++; // Increase wave number
 		spawnEnemies(); // Spawn enemies for the next wave
@@ -170,6 +177,11 @@ public class GameLogic {
 	public boolean isGameOver() {
 		return player.isDead(); // Return true if the player is dead
 	}
+	
+	public boolean isGameWon() {
+	    return enemies.isEmpty() && wave == 4; // All enemies defeated
+	}
+
 
 	// Getters and Setters
 	public Player getPlayer() {

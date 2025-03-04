@@ -35,7 +35,6 @@ public class GameGUI extends Application {
 	private static final int WIDTH = BOARD_SIZE * TILE_SIZE;
 	private static final int HEIGHT = BOARD_SIZE * TILE_SIZE;
 
-	private Stage primaryStage;
 	private GameLogic game;
 	private Canvas canvas;
 	private StackPane root;
@@ -44,7 +43,6 @@ public class GameGUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		// Main Menu Setup
-		this.primaryStage = primaryStage;
 		showMainMenu(primaryStage);
 	}
 
@@ -77,7 +75,7 @@ public class GameGUI extends Application {
 		layout.setStyle("-fx-alignment: center; -fx-padding: 50;");
 
 		// Set Scene with new size (680x680)
-		Scene scene = new Scene(layout, 680, 680);
+		Scene scene = new Scene(layout, WIDTH, WIDTH);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
@@ -113,7 +111,7 @@ public class GameGUI extends Application {
 				levelSelectionComboBox, startGameButton);
 
 		// Set Scene for Wave Selection
-		Scene waveSelectionScene = new Scene(levelSelectionLayout, 680, 680);
+		Scene waveSelectionScene = new Scene(levelSelectionLayout, WIDTH, WIDTH);
 		primaryStage.setScene(waveSelectionScene);
 		primaryStage.show();
 	}
@@ -160,18 +158,22 @@ public class GameGUI extends Application {
 
 		// Start game loop
 		game.startGameLoop();
-		render();
+		render(primaryStage);
 
 	}
 
-	private void render() {
+	private void render(Stage primaryStage) {
 		AnimationTimer gameLoop = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
 				if (game.isGameOver()) {
-					primaryStage.close();
 					stop(); // Stop the game loop
-					showGameOverScreen(); // Show the game over screen
+					showGameOverScreen(primaryStage); // Show the game over screen
+					return;
+				} 
+				else if (game.isGameWon()) {
+					stop();
+					showMainMenu(primaryStage);
 					return;
 				}
 				gc.clearRect(0, 0, WIDTH, HEIGHT);
@@ -221,21 +223,17 @@ public class GameGUI extends Application {
 	}
 
 	// GameOver screen
-	private void showGameOverScreen() {
-		Stage gameOverStage = new Stage();
+	// GameOver screen
+	private void showGameOverScreen(Stage primaryStage) {
 		Label gameOverLabel = new Label("Game Over");
 		gameOverLabel.setFont(new Font("Arial", 50));
 		gameOverLabel.setTextFill(Color.RED);
 
 		Button restart = new Button("Restart");
-
 		restart.setOnAction(e -> {
-			gameOverStage.close();
 			resetGameState();
-
-			// Create a new primary stage since the old one was closed
-			Stage newStage = new Stage();
-			showLevelSelectionScreen(newStage);
+			// Use the same primary stage instead of creating a new one
+			showLevelSelectionScreen(primaryStage);
 		});
 
 		Button quit = new Button("Quit");
@@ -251,10 +249,10 @@ public class GameGUI extends Application {
 		layout.setBackground(new Background(bg));
 		layout.getChildren().addAll(gameOverLabel, restart, quit);
 
-		Scene gameOverScene = new Scene(layout, 680, 680);
-		gameOverStage.setScene(gameOverScene);
-		gameOverStage.setTitle("Game Over");
-		gameOverStage.show();
+		Scene gameOverScene = new Scene(layout, WIDTH, WIDTH);
+		primaryStage.setScene(gameOverScene);
+		primaryStage.setTitle("Game Over");
+		primaryStage.show();
 	}
 
 	private void resetGameState() {
@@ -273,6 +271,7 @@ public class GameGUI extends Application {
 
 		gameLogic.setWave(1);
 
+		gameLogic.reset();
 		setLastShootTime(0);
 		setSpacebarPressed(false);
 	}
