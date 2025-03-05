@@ -1,24 +1,12 @@
 package entity.player;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
-
 import ability.Ability;
-import ability.ShootCardinal;
-import ability.ShootDiagonal;
 import ability.ShootStraight;
-import entity.base.Entity;
 import entity.base.Piece;
-import entity.base.Relocatable;
-import entity.piece.Pawn;
-import gui.GameGUI;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Rectangle;
-import logic.GameLogic;
 
 public class Player extends Piece {
 

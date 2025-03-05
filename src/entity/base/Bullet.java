@@ -28,26 +28,11 @@ public class Bullet extends Entity implements Relocatable {
 		setDirection(direction);
 		setPlayerBullet(isPlayerBullet);
 
-		// Set bullet image
 		this.imageView = new ImageView(new Image(getClass().getResourceAsStream("/Bullet/02.png")));
 		this.imageView.setManaged(false);
 		this.imageView.setFitWidth(GameGUI.getTileSize() * 1.5);
 		this.imageView.setFitHeight(GameGUI.getTileSize() * 1.5);
-		if (direction == 1) {
-			this.imageView.setRotate(-90);
-		} else if (direction == 2) {
-			this.imageView.setRotate(90);
-		} else if (direction == 3) {
-			this.imageView.setRotate(180);
-		} else if (direction == 5) {
-			this.imageView.setRotate(-135);
-		} else if (direction == 6) {
-			this.imageView.setRotate(-45);
-		} else if (direction == 7) {
-			this.imageView.setRotate(135);
-		} else if (direction == 8) {
-			this.imageView.setRotate(45);
-		}
+
 		this.updateBulletPosition();
 	}
 
@@ -98,6 +83,25 @@ public class Bullet extends Entity implements Relocatable {
 			moveRight();
 			break;
 		}
+		}
+	}
+
+	public void rotate() {
+		// Rotate bullet image
+		if (direction == 1) {
+			this.imageView.setRotate(-90);
+		} else if (direction == 2) {
+			this.imageView.setRotate(90);
+		} else if (direction == 3) {
+			this.imageView.setRotate(180);
+		} else if (direction == 5) {
+			this.imageView.setRotate(-135);
+		} else if (direction == 6) {
+			this.imageView.setRotate(-45);
+		} else if (direction == 7) {
+			this.imageView.setRotate(135);
+		} else if (direction == 8) {
+			this.imageView.setRotate(45);
 		}
 	}
 
@@ -173,6 +177,10 @@ public class Bullet extends Entity implements Relocatable {
 
 	public ImageView getImageView() {
 		return imageView;
+	}
+
+	public void setImageView(ImageView imageView) {
+		this.imageView = imageView;
 	}
 
 }

@@ -25,6 +25,8 @@ public class ShootStraight extends Shoot {
 		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(),
 				shooter.getDirection(), isPlayer);
 
+		b1.rotate();
+
 		newBullets.add(b1);
 
 		GameGUI.getRoot().getChildren().add(b1.getImageView());

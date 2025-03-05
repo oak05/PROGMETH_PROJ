@@ -31,6 +31,11 @@ public class ShootCardinal extends Shoot {
 		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 4,
 				isPlayer);
 
+		b1.rotate();
+		b2.rotate();
+		b3.rotate();
+		b4.rotate();
+
 		newBullets.add(b1);
 		newBullets.add(b2);
 		newBullets.add(b3);
