@@ -225,10 +225,10 @@ public class GameLogic {
 
 							// Find new direction based on reflection pairs
 							for (int[] pair : reflect) {
-								if (enemy.getDirection() == pair[0]) {
+								if (bullet.getDirection() == pair[0]) {
 									bullet.setDirection(pair[1]);
 									break;
-								} else if (enemy.getDirection() == pair[1]) {
+								} else if (bullet.getDirection() == pair[1]) {
 									bullet.setDirection(pair[0]);
 									break;
 								}
@@ -237,7 +237,7 @@ public class GameLogic {
 							// Change bullet ownership and mark reflection
 							bullet.setPlayerBullet(false);
 							bullet.rotate();
-							System.out.println(enemy.getDirection());
+							System.out.println(bullet.getDirection());
 							// Decrement reflection count
 							if (enemy instanceof King) {
 								((King) enemy).reflected();
