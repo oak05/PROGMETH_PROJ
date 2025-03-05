@@ -12,7 +12,7 @@ public class Bishop extends Piece {
 		// TODO Auto-generated constructor stub
 		super(x, y, hp);
 		this.ability.add(new ShootDiagonal(1, 0.075));
-		
+
 		// Piece Display
 		this.imageView = new ImageView(
 				new Image(getClass().getResourceAsStream("/PNGs/With Shadow/1024px/b_bishop_png_shadow_1024px.png")));
@@ -21,6 +21,7 @@ public class Bishop extends Piece {
 		this.imageView.setFitHeight(tileSize);
 		this.imageView.setX(getGridX() * tileSize);
 		this.imageView.setY(getGridY() * tileSize);
-	}
 
+		setBulletImageView("/Bullet/04.png");
+	}
 }

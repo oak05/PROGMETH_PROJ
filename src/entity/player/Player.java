@@ -7,6 +7,7 @@ import ability.ShootCardinal;
 import ability.ShootDiagonal;
 import ability.ShootStraight;
 import entity.base.Piece;
+import gui.GameGUI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -36,7 +37,8 @@ public class Player extends Piece {
 		this.imageView.setManaged(false);
 		this.imageView.setFitWidth(tileSize);
 		this.imageView.setFitHeight(tileSize);
-		updatePlayerPosition();
+
+		setBulletImageView("/Bullet/65.png");
 	}
 
 	// Getters & Setters

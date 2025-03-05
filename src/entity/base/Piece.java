@@ -25,6 +25,7 @@ public abstract class Piece extends Entity implements Relocatable {
 	protected ImageView imageView;
 	protected ArrayList<Ability> ability;
 	private int count = 0;
+	private String bulletImage;
 
 	public Piece(Double x, Double y, int hp) {
 		super(x, y);
@@ -176,6 +177,14 @@ public abstract class Piece extends Entity implements Relocatable {
 
 	public void setDirection(int direction) {
 		this.direction = direction;
+	}
+
+	public String getBulletImage() {
+		return bulletImage;
+	}
+
+	public void setBulletImageView(String bulletImage) {
+		this.bulletImage = bulletImage;
 	}
 
 }

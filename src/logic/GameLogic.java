@@ -32,7 +32,7 @@ public class GameLogic {
 	private int wave; // Track the current wave
 	private int maxEnemies; // Max enemies per wave
 	private double[][] enemypositions = { { 3, 2 }, { 1, 8 }, { 3, 14 }, { 13, 11 }, { 13, 5 }, { 9, 1 }, { 9, 15 },
-			{ 15, 15 }, { 15, 1 }, { 1, 5 }, { 1, 11 }, { 15, 8 } };
+			{ 15, 15 }, { 15, 1 }, { 1, 5 }, { 1, 11 }, { 7, 8 } };
 	private int[][] reflect = { { 1, 2 }, { 3, 4 }, { 5, 8 }, { 6, 7 } };
 
 	public GameLogic() {
@@ -86,8 +86,9 @@ public class GameLogic {
 			System.out.println("Spawning enemy at: " + enemypositions[number][1] + " " + enemypositions[number][0]);
 
 			// Create enemy based on wave
+			int enemyRandom = random.nextInt(5);
 			Piece enemy;
-			switch (wave) {
+			switch (enemyRandom) {
 			case 1:
 				enemy = new Pawn(enemypositions[number][1], enemypositions[number][0], 3);
 				break;
@@ -95,9 +96,12 @@ public class GameLogic {
 				enemy = new Rook(enemypositions[number][1], enemypositions[number][0], 5);
 				break;
 			case 3:
-				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 7);
+				enemy = new Bishop(enemypositions[number][1], enemypositions[number][0], 7);
 				break;
 			case 4:
+				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 7);
+				break;
+			case 5:
 				enemy = new King(enemypositions[number][1], enemypositions[number][0], 10);
 				break;
 			default:
@@ -154,7 +158,7 @@ public class GameLogic {
 					enemy.setDirection(8);// Move Down Right
 			}
 			if (enemy.getCount() >= 150) {
-//				enemy.shootBullet();
+				enemy.shootBullet();
 				enemy.resetCount();
 			}
 		}

@@ -3,6 +3,7 @@ package entity.piece;
 import ability.ShootCardinal;
 import ability.ShootDiagonal;
 import entity.base.Piece;
+import gui.GameGUI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -23,6 +24,8 @@ public class Queen extends Piece {
 		this.imageView.setFitHeight(tileSize);
 		this.imageView.setX(getGridX() * tileSize);
 		this.imageView.setY(getGridY() * tileSize);
+
+		setBulletImageView("/Bullet/56.png");
 	}
 
 	public int getReflectLeft() {

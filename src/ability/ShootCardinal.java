@@ -22,14 +22,14 @@ public class ShootCardinal extends Shoot {
 		if (shooter instanceof Player)
 			isPlayer = true;
 
-		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 1,
-				isPlayer);
-		Bullet b2 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 2,
-				isPlayer);
-		Bullet b3 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 3,
-				isPlayer);
-		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 4,
-				isPlayer);
+		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 1, isPlayer,
+				shooter.getBulletImage());
+		Bullet b2 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 2, isPlayer,
+				shooter.getBulletImage());
+		Bullet b3 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 3, isPlayer,
+				shooter.getBulletImage());
+		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 4, isPlayer,
+				shooter.getBulletImage());
 
 		b1.rotate();
 		b2.rotate();

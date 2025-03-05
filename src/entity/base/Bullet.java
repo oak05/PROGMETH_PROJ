@@ -21,14 +21,14 @@ public class Bullet extends Entity implements Relocatable {
 	private int durability = 1;
 	private ImageView imageView;
 
-	public Bullet(Double posX, Double posY, int damage, double speed, int direction, boolean isPlayerBullet) {
+	public Bullet(Double posX, Double posY, int damage, double speed, int direction, boolean isPlayerBullet,String bulletImage) {
 		super(posX, posY);
 		setDamage(damage);
 		setSpeed(speed);
 		setDirection(direction);
 		setPlayerBullet(isPlayerBullet);
 
-		this.imageView = new ImageView(new Image(getClass().getResourceAsStream("/Bullet/02.png")));
+		this.imageView = new ImageView(new Image(getClass().getResourceAsStream(bulletImage)));
 		this.imageView.setManaged(false);
 		this.imageView.setFitWidth(GameGUI.getTileSize() * 1.5);
 		this.imageView.setFitHeight(GameGUI.getTileSize() * 1.5);

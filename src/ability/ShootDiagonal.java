@@ -23,14 +23,14 @@ public class ShootDiagonal extends Shoot {
 		if (shooter instanceof Player)
 			isPlayer = true;
 
-		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 5,
-				isPlayer);
-		Bullet b2 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 6,
-				isPlayer);
-		Bullet b3 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 7,
-				isPlayer);
-		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 8,
-				isPlayer);
+		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 5, isPlayer,
+				shooter.getBulletImage());
+		Bullet b2 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 6, isPlayer,
+				shooter.getBulletImage());
+		Bullet b3 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 7, isPlayer,
+				shooter.getBulletImage());
+		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 8, isPlayer,
+				shooter.getBulletImage());
 		b1.rotate();
 		b2.rotate();
 		b3.rotate();
