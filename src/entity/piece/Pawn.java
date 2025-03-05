@@ -10,7 +10,7 @@ public class Pawn extends Piece {
 	public Pawn(double x, double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
-		this.ability.add(new ShootStraight(10, 0.075));
+		this.ability.add(new ShootStraight(1, 0.075));
 		
 		// Piece Display
 		this.imageView = new ImageView(

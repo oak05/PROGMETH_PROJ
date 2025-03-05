@@ -4,6 +4,7 @@ import entity.base.*;
 import entity.player.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -27,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import logic.GameLogic;
+import soundeffect.BackgroundMusic;
 
 public class GameGUI extends Application {
 	private static boolean isSpacebarPressed = false;
@@ -41,6 +43,11 @@ public class GameGUI extends Application {
 	private Canvas canvas;
 	private static StackPane root;
 	private GraphicsContext gc;
+
+	private static boolean upPressed = false;
+	private static boolean downPressed = false;
+	private static boolean leftPressed = false;
+	private static boolean rightPressed = false;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -124,11 +131,10 @@ public class GameGUI extends Application {
 		gc = canvas.getGraphicsContext2D();
 
 		Player player = GameLogic.getInstance().getPlayer();
-		// Position player properly on screen
 		player.getPlayerImageView().setTranslateX(player.getGridX() * TILE_SIZE);
 		player.getPlayerImageView().setTranslateY(player.getGridY() * TILE_SIZE);
 
-		// Create health and wave labels
+		// Initialize labels
 		healthLabel = new Label("Health: " + player.getHealth());
 		healthLabel.setTextFill(Color.WHITE);
 		healthLabel.setFont(Font.font(16));
@@ -137,25 +143,17 @@ public class GameGUI extends Application {
 		waveLabel.setTextFill(Color.WHITE);
 		waveLabel.setFont(Font.font(16));
 
-		// Create a HBox to hold the labels
-		HBox infoBox = new HBox(20); // 20 is the spacing between labels
+		HBox infoBox = new HBox(20);
 		infoBox.getChildren().addAll(healthLabel, waveLabel);
 		infoBox.setAlignment(Pos.TOP_LEFT);
 		infoBox.setPadding(new Insets(10));
-		infoBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); // Semi-transparent background
-
-		root = new StackPane(canvas);
-		root.getChildren().addAll(player.getPlayerImageView(), infoBox // Add the info box to the root
-		);
-
-		// Position the info box at the top left of the screen
-		StackPane.setAlignment(infoBox, Pos.TOP_LEFT);
+		infoBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
 
 		root = new StackPane(canvas);
 		root.getChildren().addAll(infoBox, player.getPlayerImageView());
+		BackgroundMusic.playBGM();
 
 		Scene scene = new Scene(root);
-
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("What the Hell is This Chess?");
 		primaryStage.show();
@@ -201,7 +199,6 @@ public class GameGUI extends Application {
 		GameLogic.getInstance().spawnEnemies();
 		GameLogic.getInstance().startGameLoop();
 		render(primaryStage);
-
 	}
 
 	private void render(Stage primaryStage) {
@@ -217,6 +214,11 @@ public class GameGUI extends Application {
 					showGameWonScreen(primaryStage);
 					return;
 				}
+
+				// Update labels every frame
+				updateHealthLabel(GameLogic.getInstance().getPlayer().getHealth());
+				updateWaveLabel(GameLogic.getInstance().getWave());
+
 				gc.clearRect(0, 0, SIZE, SIZE);
 				drawChessBoard();
 				drawEntities();
@@ -254,6 +256,7 @@ public class GameGUI extends Application {
 		Label gameOverLabel = new Label("Game Over");
 		gameOverLabel.setFont(new Font("Arial", 50));
 		gameOverLabel.setTextFill(Color.RED);
+		BackgroundMusic.stopBGM();
 
 		Button restart = new Button("Restart");
 		restart.setOnAction(e -> {
@@ -336,6 +339,15 @@ public class GameGUI extends Application {
 			GameLogic.getInstance().getPlayer().shootBullet(); // Player shoots
 			lastShootTime = now; // Update cooldown time
 		}
+	}
+
+	// In GameGUI.java
+	public void updateHealthLabel(int health) {
+		Platform.runLater(() -> healthLabel.setText("Health: " + health));
+	}
+
+	public void updateWaveLabel(int wave) {
+		Platform.runLater(() -> waveLabel.setText("Wave: " + wave));
 	}
 
 	// Getter & Setter

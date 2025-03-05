@@ -11,8 +11,8 @@ public class King extends Piece {
 	public King(Double x, Double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
-		this.ability.add(new ShootDiagonal(20, 0.05));
-		this.ability.add(new ShootCardinal(20, 0.05));
+		this.ability.add(new ShootDiagonal(2, 0.05));
+		this.ability.add(new ShootCardinal(2, 0.05));
 		
 		// Piece Display
 		this.imageView = new ImageView(

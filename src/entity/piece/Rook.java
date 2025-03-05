@@ -10,7 +10,7 @@ public class Rook extends Piece {
 	public Rook(double x, double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
-		this.ability.add(new ShootCardinal(10, 0.075)); 
+		this.ability.add(new ShootCardinal(1, 0.075)); 
 		
 		// Piece Display
 		this.imageView = new ImageView(

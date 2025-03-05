@@ -10,11 +10,15 @@ import ability.ShootDiagonal;
 import ability.ShootStraight;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import soundeffect.SoundManager;
 
+import java.io.Console;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class GameLogic {
 	// Static instance (Singleton-like)
@@ -53,25 +57,56 @@ public class GameLogic {
 
 	public void spawnEnemies() {
 		int enemiesToSpawn = wave * maxEnemies; // Scale enemies by wave number
+		Random random = new Random();
+
+		// Create a list to track used positions
+		Set<Integer> usedPositions = new HashSet<>();
+
 		for (int i = 0; i < enemiesToSpawn; i++) {
-			if (wave == 1) {
-				Pawn enemy = new Pawn(enemypositions[i][1], enemypositions[i][0], 3);
-				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
-				enemies.add(enemy);
-			} else if (wave == 2) {
-				Rook enemy = new Rook(enemypositions[i][1], enemypositions[i][0], 5);
-				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
-				enemies.add(enemy);
-			} else if (wave == 3) {
-				Bishop enemy = new Bishop(enemypositions[i][1], enemypositions[i][0], 5);
-				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
-				enemies.add(enemy);
-			} else if (wave == 4) {
-				Queen enemy = new Queen(enemypositions[i][1], enemypositions[i][0], 7);
-				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
-				enemies.add(enemy);
+			int attempts = 0;
+			int number;
+
+			// Find a unique position
+			do {
+				number = random.nextInt(12);
+				attempts++;
+
+				// Prevent infinite loop
+				if (attempts > 50) {
+					System.out.println("Warning: Could not find unique position after 50 attempts");
+					break;
+				}
+			} while (usedPositions.contains(number));
+
+			// Mark position as used
+			usedPositions.add(number);
+
+			// Debug print
+			System.out.println("Spawning enemy at: " + enemypositions[number][1] + " " + enemypositions[number][0]);
+
+			// Create enemy based on wave
+			Piece enemy;
+			switch (wave) {
+			case 1:
+				enemy = new Pawn(enemypositions[number][1], enemypositions[number][0], 3);
+				break;
+			case 2:
+				enemy = new Rook(enemypositions[number][1], enemypositions[number][0], 5);
+				break;
+			case 3:
+				enemy = new Bishop(enemypositions[number][1], enemypositions[number][0], 5);
+				break;
+			case 4:
+				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 7);
+				break;
+			default:
+				// Fallback to Pawn for unexpected wave numbers
+				enemy = new Pawn(enemypositions[number][1], enemypositions[number][0], 3);
 			}
 
+			// Add to scene
+			Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
+			enemies.add(enemy);
 		}
 	}
 
@@ -160,6 +195,7 @@ public class GameLogic {
 				if (bullet1.isPlayerBullet() != bullet2.isPlayerBullet()
 						&& Math.abs(bullet1.getGridX() - bullet2.getGridX()) < tolerance
 						&& Math.abs(bullet1.getGridY() - bullet2.getGridY()) < tolerance) {
+					SoundManager.playHit();
 					bulletsToRemove.add(bullet1);
 					bulletsToRemove.add(bullet2);
 					Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet1.getImageView()));
@@ -181,6 +217,7 @@ public class GameLogic {
 					if (distance < tolerance) {
 						enemy.takeDamage(bullet.getDamage());
 						bullet.decreaseDurability();
+						SoundManager.playHit();
 						if (bullet.isDestroyed()) {
 							bulletsToRemove.add(bullet);
 							Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet.getImageView()));
@@ -196,6 +233,7 @@ public class GameLogic {
 				double dy = bullet.getGridY() - player.getGridY();
 				double distance = Math.sqrt(dx * dx + dy * dy);
 				if (distance < tolerance) {
+					SoundManager.playHit();
 					player.takeDamage(bullet.getDamage());
 					bulletsToRemove.add(bullet);
 					Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet.getImageView()));
@@ -212,7 +250,6 @@ public class GameLogic {
 	}
 
 	public void reset() {
-//	    isRunning = true;   // make sure the game loop will run again
 		instance = new GameLogic();
 	}
 

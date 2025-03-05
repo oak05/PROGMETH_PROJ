@@ -11,8 +11,8 @@ public class Queen extends Piece {
 	public Queen(double x, double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
-		this.ability.add(new ShootDiagonal(10, 0.1)); 
-		this.ability.add(new ShootCardinal(10, 0.1)); 
+		this.ability.add(new ShootDiagonal(1, 0.1)); 
+		this.ability.add(new ShootCardinal(1, 0.1)); 
 		
 		// Piece Display
 		this.imageView = new ImageView(

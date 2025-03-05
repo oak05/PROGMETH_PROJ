@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import logic.GameLogic;
+import soundeffect.SoundManager;
 
 public abstract class Piece extends Entity implements Relocatable {
 
@@ -43,6 +44,7 @@ public abstract class Piece extends Entity implements Relocatable {
 				GameLogic.getInstance().getBullets().addAll(newBullets);
 			}
 		}
+		SoundManager.playShoot();
 	}
 
 	public void updatePlayerPosition() {

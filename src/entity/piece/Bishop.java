@@ -11,7 +11,7 @@ public class Bishop extends Piece {
 	public Bishop(Double x, Double y, int hp) {
 		// TODO Auto-generated constructor stub
 		super(x, y, hp);
-		this.ability.add(new ShootDiagonal(10, 0.075));
+		this.ability.add(new ShootDiagonal(1, 0.075));
 		
 		// Piece Display
 		this.imageView = new ImageView(
