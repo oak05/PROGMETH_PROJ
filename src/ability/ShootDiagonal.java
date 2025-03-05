@@ -17,26 +17,31 @@ public class ShootDiagonal extends Shoot {
 	}
 
 	@Override
-	public ArrayList<Bullet> createBullet(Piece shooter) {
+	public ArrayList<Bullet> createBullet(Piece shooter, int direction) {
 		// TODO Auto-generated method stub
 		ArrayList<Bullet> newBullets = new ArrayList<Bullet>();
-		if (shooter instanceof Player) isPlayer = true;
+		if (shooter instanceof Player)
+			isPlayer = true;
 
-		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 5, isPlayer);
-		Bullet b2 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 6, isPlayer);
-		Bullet b3 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 7, isPlayer);
-		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 8, isPlayer);
-		
+		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 5,
+				isPlayer);
+		Bullet b2 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 6,
+				isPlayer);
+		Bullet b3 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 7,
+				isPlayer);
+		Bullet b4 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 8,
+				isPlayer);
+
 		newBullets.add(b1);
 		newBullets.add(b2);
 		newBullets.add(b3);
 		newBullets.add(b4);
-	
+
 		GameGUI.getRoot().getChildren().add(b1.getImageView());
 		GameGUI.getRoot().getChildren().add(b2.getImageView());
 		GameGUI.getRoot().getChildren().add(b3.getImageView());
 		GameGUI.getRoot().getChildren().add(b4.getImageView());
-		
+
 		return newBullets;
 	}
 

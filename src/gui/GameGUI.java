@@ -11,6 +11,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
@@ -22,7 +25,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import logic.GameLogic;
 
@@ -32,8 +34,9 @@ public class GameGUI extends Application {
 	private static final long SHOOT_COOLDOWN = 1000;
 	private static final int BOARD_SIZE = 17;
 	private static final int TILE_SIZE = 40;
-	private static final int WIDTH = BOARD_SIZE * TILE_SIZE;
-	private static final int HEIGHT = BOARD_SIZE * TILE_SIZE;
+	private static final int SIZE = BOARD_SIZE * TILE_SIZE;
+	private Label healthLabel;
+	private Label waveLabel;
 
 	private Canvas canvas;
 	private static StackPane root;
@@ -74,7 +77,7 @@ public class GameGUI extends Application {
 		layout.setStyle("-fx-alignment: center; -fx-padding: 50;");
 
 		// Set Scene with new size (680x680)
-		Scene scene = new Scene(layout, WIDTH, WIDTH);
+		Scene scene = new Scene(layout, SIZE, SIZE);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
@@ -111,13 +114,13 @@ public class GameGUI extends Application {
 				levelSelectionComboBox, startGameButton);
 
 		// Set Scene for Wave Selection
-		Scene waveSelectionScene = new Scene(levelSelectionLayout, WIDTH, WIDTH);
+		Scene waveSelectionScene = new Scene(levelSelectionLayout, SIZE, SIZE);
 		primaryStage.setScene(waveSelectionScene);
 		primaryStage.show();
 	}
 
 	public void gameStart(Stage primaryStage) {
-		canvas = new Canvas(WIDTH, HEIGHT);
+		canvas = new Canvas(SIZE, SIZE);
 		gc = canvas.getGraphicsContext2D();
 
 		Player player = GameLogic.getInstance().getPlayer();
@@ -125,8 +128,31 @@ public class GameGUI extends Application {
 		player.getPlayerImageView().setTranslateX(player.getGridX() * TILE_SIZE);
 		player.getPlayerImageView().setTranslateY(player.getGridY() * TILE_SIZE);
 
+		// Create health and wave labels
+		healthLabel = new Label("Health: " + player.getHealth());
+		healthLabel.setTextFill(Color.WHITE);
+		healthLabel.setFont(Font.font(16));
+
+		waveLabel = new Label("Wave: " + GameLogic.getInstance().getWave());
+		waveLabel.setTextFill(Color.WHITE);
+		waveLabel.setFont(Font.font(16));
+
+		// Create a HBox to hold the labels
+		HBox infoBox = new HBox(20); // 20 is the spacing between labels
+		infoBox.getChildren().addAll(healthLabel, waveLabel);
+		infoBox.setAlignment(Pos.TOP_LEFT);
+		infoBox.setPadding(new Insets(10));
+		infoBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);"); // Semi-transparent background
+
 		root = new StackPane(canvas);
-		root.getChildren().add(player.getPlayerImageView());
+		root.getChildren().addAll(player.getPlayerImageView(), infoBox // Add the info box to the root
+		);
+
+		// Position the info box at the top left of the screen
+		StackPane.setAlignment(infoBox, Pos.TOP_LEFT);
+
+		root = new StackPane(canvas);
+		root.getChildren().addAll(infoBox, player.getPlayerImageView());
 
 		Scene scene = new Scene(root);
 
@@ -145,13 +171,21 @@ public class GameGUI extends Application {
 			} else if (event.getCode() == KeyCode.D) {
 				player.moveRight();
 			} else if (event.getCode() == KeyCode.UP) {
-				
+				player.setDirection(1);
 			} else if (event.getCode() == KeyCode.DOWN) {
-				
+				player.setDirection(2);
 			} else if (event.getCode() == KeyCode.LEFT) {
-				
+				player.setDirection(3);
 			} else if (event.getCode() == KeyCode.RIGHT) {
-				
+				player.setDirection(4);
+			} else if (event.getCode() == KeyCode.UP && event.getCode() == KeyCode.LEFT) {
+				player.setDirection(5);
+			} else if (event.getCode() == KeyCode.UP && event.getCode() == KeyCode.RIGHT) {
+				player.setDirection(6);
+			} else if (event.getCode() == KeyCode.DOWN && event.getCode() == KeyCode.LEFT) {
+				player.setDirection(7);
+			} else if (event.getCode() == KeyCode.DOWN && event.getCode() == KeyCode.RIGHT) {
+				player.setDirection(8);
 			}
 			if (event.getCode() == KeyCode.SPACE) {
 				isSpacebarPressed = true;
@@ -183,7 +217,7 @@ public class GameGUI extends Application {
 					showGameWonScreen(primaryStage);
 					return;
 				}
-				gc.clearRect(0, 0, WIDTH, HEIGHT);
+				gc.clearRect(0, 0, SIZE, SIZE);
 				drawChessBoard();
 				drawEntities();
 				handleShooting(now); // Handle shooting with cooldown
@@ -211,8 +245,8 @@ public class GameGUI extends Application {
 	private void drawEntities() {
 
 		for (Bullet bullet : GameLogic.getInstance().getBullets()) {
-	        bullet.updateBulletPosition(); // Move the bullet
-	    }
+			bullet.updateBulletPosition(); // Move the bullet
+		}
 	}
 
 	// GameOver screen
@@ -241,48 +275,48 @@ public class GameGUI extends Application {
 		layout.setBackground(new Background(bg));
 		layout.getChildren().addAll(gameOverLabel, restart, quit);
 
-		Scene gameOverScene = new Scene(layout, WIDTH, WIDTH);
+		Scene gameOverScene = new Scene(layout, SIZE, SIZE);
 		primaryStage.setScene(gameOverScene);
 		primaryStage.setTitle("Game Over");
 		primaryStage.show();
 	}
-	
+
 	// GameOver screen
-		private void showGameWonScreen(Stage primaryStage) {
-			Label gameOverLabel = new Label("Game Won");
-			gameOverLabel.setFont(new Font("Arial", 50));
-			gameOverLabel.setTextFill(Color.YELLOW);
+	private void showGameWonScreen(Stage primaryStage) {
+		Label gameOverLabel = new Label("Game Won");
+		gameOverLabel.setFont(new Font("Arial", 50));
+		gameOverLabel.setTextFill(Color.YELLOW);
 
-			Button restart = new Button("Restart");
-			restart.setOnAction(e -> {
-				resetGameState();
-				// Use the same primary stage instead of creating a new one
-				showLevelSelectionScreen(primaryStage);
-			});
+		Button restart = new Button("Restart");
+		restart.setOnAction(e -> {
+			resetGameState();
+			// Use the same primary stage instead of creating a new one
+			showLevelSelectionScreen(primaryStage);
+		});
 
-			Button quit = new Button("Quit");
-			quit.setOnAction(e -> System.exit(0));
+		Button quit = new Button("Quit");
+		quit.setOnAction(e -> System.exit(0));
 
-			VBox layout = new VBox(20);
-			layout.setAlignment(Pos.CENTER);
+		VBox layout = new VBox(20);
+		layout.setAlignment(Pos.CENTER);
 
-			Image bgImage = new Image(getClass().getResourceAsStream("/gameOverBg.png"));
-			BackgroundImage bg = new BackgroundImage(bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-					BackgroundPosition.CENTER, new BackgroundSize(100, 100, true, true, false, true));
+		Image bgImage = new Image(getClass().getResourceAsStream("/gameOverBg.png"));
+		BackgroundImage bg = new BackgroundImage(bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+				BackgroundPosition.CENTER, new BackgroundSize(100, 100, true, true, false, true));
 
-			layout.setBackground(new Background(bg));
-			layout.getChildren().addAll(gameOverLabel, restart, quit);
+		layout.setBackground(new Background(bg));
+		layout.getChildren().addAll(gameOverLabel, restart, quit);
 
-			Scene gameOverScene = new Scene(layout, WIDTH, WIDTH);
-			primaryStage.setScene(gameOverScene);
-			primaryStage.setTitle("Game Over");
-			primaryStage.show();
-		}
+		Scene gameOverScene = new Scene(layout, SIZE, SIZE);
+		primaryStage.setScene(gameOverScene);
+		primaryStage.setTitle("Game Over");
+		primaryStage.show();
+	}
 
 	private void resetGameState() {
 		// Properly reset the game state
 		GameLogic.getInstance().reset();
-		
+
 		// Reset player position and properties
 		Player player = GameLogic.getInstance().getPlayer();
 		player.setGridX(8.0); // Put player back to starting position
@@ -292,7 +326,7 @@ public class GameGUI extends Application {
 		// Clear game collections
 		GameLogic.getInstance().getEnemies().clear();
 		GameLogic.getInstance().getBullets().clear();
-	
+
 		setLastShootTime(0);
 		setSpacebarPressed(false);
 	}
@@ -350,17 +384,12 @@ public class GameGUI extends Application {
 		return TILE_SIZE;
 	}
 
-	public static int getWidth() {
-		return WIDTH;
-	}
-
-	public static int getHeight() {
-		return HEIGHT;
+	public static int getSize() {
+		return SIZE;
 	}
 
 	public static StackPane getRoot() {
 		return root;
 	}
-	
-	
+
 }

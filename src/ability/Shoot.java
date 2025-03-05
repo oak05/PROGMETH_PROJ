@@ -29,12 +29,12 @@ public abstract class Shoot implements Ability {
 	public void activate(Entity entity) {
 		// TODO Auto-generated method stub
 		if (entity instanceof Piece) {
-			createBullet((Piece) entity);
+			createBullet((Piece) entity,0);
 		}
 
 	}
 
-	public abstract ArrayList<Bullet> createBullet(Piece shooter);
+	public abstract ArrayList<Bullet> createBullet(Piece shooter, int direction);
 
 	// Getters & Setters
 

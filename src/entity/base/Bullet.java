@@ -21,31 +21,46 @@ public class Bullet extends Entity implements Relocatable {
 	private int durability = 1;
 	private ImageView imageView;
 
-	public Bullet(Double posX, Double posY, int damage, double speed, int direction , boolean isPlayerBullet) {
+	public Bullet(Double posX, Double posY, int damage, double speed, int direction, boolean isPlayerBullet) {
 		super(posX, posY);
 		setDamage(damage);
 		setSpeed(speed);
 		setDirection(direction);
 		setPlayerBullet(isPlayerBullet);
-		
+
 		// Set bullet image
-        this.imageView = new ImageView(new Image(getClass().getResourceAsStream("/Bullet/02.png")));
-        this.imageView.setManaged(false);
-        this.imageView.setFitWidth(GameGUI.getTileSize() * 1.5);
-        this.imageView.setFitHeight(GameGUI.getTileSize() * 1.5);
-        this.updateBulletPosition();
+		this.imageView = new ImageView(new Image(getClass().getResourceAsStream("/Bullet/02.png")));
+		this.imageView.setManaged(false);
+		this.imageView.setFitWidth(GameGUI.getTileSize() * 1.5);
+		this.imageView.setFitHeight(GameGUI.getTileSize() * 1.5);
+		if (direction == 1) {
+			this.imageView.setRotate(-90);
+		} else if (direction == 2) {
+			this.imageView.setRotate(90);
+		} else if (direction == 3) {
+			this.imageView.setRotate(180);
+		} else if (direction == 5) {
+			this.imageView.setRotate(-135);
+		} else if (direction == 6) {
+			this.imageView.setRotate(-45);
+		} else if (direction == 7) {
+			this.imageView.setRotate(135);
+		} else if (direction == 8) {
+			this.imageView.setRotate(45);
+		}
+		this.updateBulletPosition();
 	}
 
 	// Method
-	
+
 	public void updateBulletPosition() {
 		Platform.runLater(() -> {
-            this.imageView.setX( ( this.gridX ) * GameGUI.getTileSize());
-            this.imageView.setY( ( this.gridY ) * GameGUI.getTileSize());
+			this.imageView.setX((this.gridX) * GameGUI.getTileSize());
+			this.imageView.setY((this.gridY) * GameGUI.getTileSize());
 		});
 	}
 
-	public void move() {	
+	public void move() {
 		switch (this.direction) {
 		case 1: {
 			moveUp();
@@ -87,17 +102,17 @@ public class Bullet extends Entity implements Relocatable {
 	}
 
 	public void decreaseDurability() {
-        durability--;
-    }
+		durability--;
+	}
 
-    public boolean isDestroyed() {
-        return durability <= 0;
-    }
-	
+	public boolean isDestroyed() {
+		return durability <= 0;
+	}
+
 	@Override
 	public void moveUp() {
 		// TODO Auto-generated method stub
-		this.gridY -= speed; 
+		this.gridY -= speed;
 	}
 
 	@Override
@@ -109,13 +124,13 @@ public class Bullet extends Entity implements Relocatable {
 	@Override
 	public void moveLeft() {
 		// TODO Auto-generated method stub
-		this.gridX-=speed;
+		this.gridX -= speed;
 	}
 
 	@Override
 	public void moveRight() {
 		// TODO Auto-generated method stub
-		this.gridX+=speed;
+		this.gridX += speed;
 	}
 
 	// Getters & Setters
@@ -151,12 +166,13 @@ public class Bullet extends Entity implements Relocatable {
 	public void setPlayerBullet(boolean isPlayerBullet) {
 		this.isPlayerBullet = isPlayerBullet;
 	}
-	
+
 	public boolean isOffScreen() {
 		return gridY <= 0 || gridY >= 15;
 	}
+
 	public ImageView getImageView() {
-        return imageView;
-    }
+		return imageView;
+	}
 
 }

@@ -15,17 +15,20 @@ public class ShootStraight extends Shoot {
 	}
 
 	@Override
-	public ArrayList<Bullet> createBullet(Piece shooter) {
+	public ArrayList<Bullet> createBullet(Piece shooter, int direction) {
 		// TODO Auto-generated method stub
 		ArrayList<Bullet> newBullets = new ArrayList<Bullet>();
-		if (shooter instanceof Player) isPlayer = true;
-		
-		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(), 1 ,isPlayer);
-		
+		if (shooter instanceof Player) {
+			isPlayer = true;
+		}
+
+		Bullet b1 = new Bullet(shooter.getGridX(), shooter.getGridY(), getBulletDamage(), getBulletSpeed(),
+				shooter.getDirection(), isPlayer);
+
 		newBullets.add(b1);
-		
+
 		GameGUI.getRoot().getChildren().add(b1.getImageView());
-		
+
 		System.out.println("Bullet Created at " + "( " + shooter.getGridX() + ", " + shooter.getGridY() + " )");
 		return newBullets;
 	}

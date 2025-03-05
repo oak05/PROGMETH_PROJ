@@ -7,12 +7,14 @@ import gui.GameGUI;
 import ability.Ability;
 import ability.ShootCardinal;
 import ability.ShootDiagonal;
+import ability.ShootStraight;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class GameLogic {
 	// Static instance (Singleton-like)
@@ -29,7 +31,7 @@ public class GameLogic {
 			{ 15, 15 }, { 15, 1 }, { 1, 5 }, { 1, 11 }, { 15, 8 } };
 
 	public GameLogic() {
-		player = new Player(8.0, 15.0, 10000); // Start position
+		player = new Player(8.0, 15.0, 10); // Start position
 		enemies = new ArrayList<>();
 		bullets = new ArrayList<>();
 		isRunning = true;
@@ -44,7 +46,7 @@ public class GameLogic {
 		}
 		return instance;
 	}
-	
+
 	public static void setInstance(GameLogic instance) {
 		GameLogic.instance = instance;
 	}
@@ -53,7 +55,7 @@ public class GameLogic {
 		int enemiesToSpawn = wave * maxEnemies; // Scale enemies by wave number
 		for (int i = 0; i < enemiesToSpawn; i++) {
 			if (wave == 1) {
-				Queen enemy = new Queen(enemypositions[i][1], enemypositions[i][0], 5);
+				Pawn enemy = new Pawn(enemypositions[i][1], enemypositions[i][0], 3);
 				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
 				enemies.add(enemy);
 			} else if (wave == 2) {
@@ -65,7 +67,7 @@ public class GameLogic {
 				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
 				enemies.add(enemy);
 			} else if (wave == 4) {
-				Pawn enemy = new Pawn(enemypositions[i][1], enemypositions[i][0], 3);
+				Queen enemy = new Queen(enemypositions[i][1], enemypositions[i][0], 7);
 				Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
 				enemies.add(enemy);
 			}
@@ -92,6 +94,29 @@ public class GameLogic {
 		// Spawn bullets for enemies every 50 ticks (adjust based on game speed)
 		for (Piece enemy : enemies) {
 			enemy.count();
+			double disX = enemy.getGridX() - player.getGridX();
+			double disY = enemy.getGridY() - player.getGridY();
+			if (disX == 0 && disY != 0) {
+				if (disY > 0)
+					enemy.setDirection(1);// Move Up
+				else if (disY < 0)
+					enemy.setDirection(2);// Move Down
+			} else if (disY == 0 && disX != 0) {
+				if (disX > 0)
+					enemy.setDirection(3);// Move Left
+				else if (disX < 0)
+					enemy.setDirection(4);// Move Right
+			} else if (disY != 0 && disX != 0) {
+				if (disX > 0 && disY > 0)
+					enemy.setDirection(5);// Move Up Left
+				else if (disX < 0 && disY > 0)
+					enemy.setDirection(6);// Move Up Right
+
+				else if (disX > 0 && disY < 0)
+					enemy.setDirection(7);// Move Down Left
+				else if (disX < 0 && disY < 0)
+					enemy.setDirection(8);// Move Down Right
+			}
 			if (enemy.getCount() >= 150) {
 				enemy.shootBullet();
 				enemy.resetCount();
@@ -150,7 +175,7 @@ public class GameLogic {
 			if (bullet.isPlayerBullet()) {
 				for (Piece enemy : enemies) {
 					double dx = bullet.getGridX() - enemy.getGridX();
-					double dy = bullet.getGridY() - enemy.getGridY() + 1;
+					double dy = bullet.getGridY() - enemy.getGridY();
 					double distance = Math.sqrt(dx * dx + dy * dy);
 
 					if (distance < tolerance) {
@@ -193,6 +218,18 @@ public class GameLogic {
 
 	// Transition to the next waves
 	private void nextWave() {
+		Random random = new Random();
+		int number = random.nextInt(3);
+		ArrayList<Ability> playerAbility = new ArrayList<Ability>();
+		if (number == 0) {
+			playerAbility.add(new ShootStraight(1, 0.075));
+		} else if (number == 1) {
+			playerAbility.add(new ShootCardinal(1, 0.075));
+		} else if (number == 2) {
+			playerAbility.add(new ShootDiagonal(1, 0.075));
+			playerAbility.add(new ShootCardinal(1, 0.075));
+		}
+		player.setAbility(playerAbility);
 		wave++; // Increase wave number
 		spawnEnemies(); // Spawn enemies for the next wave
 		System.out.println("Wave : " + wave);
@@ -226,5 +263,9 @@ public class GameLogic {
 
 	public void setWave(int wave) {
 		this.wave = wave;
+	}
+
+	public int getWave() {
+		return this.wave;
 	}
 }

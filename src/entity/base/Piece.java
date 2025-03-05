@@ -20,6 +20,7 @@ public abstract class Piece extends Entity implements Relocatable {
 	private static final int GRID_BOUNDARY = GameGUI.getBoardSize() - 1;
 	private int health;
 	private boolean isDead;
+	private int direction = 1;
 	protected ImageView imageView;
 	protected ArrayList<Ability> ability;
 	private int count = 0;
@@ -38,7 +39,7 @@ public abstract class Piece extends Entity implements Relocatable {
 		ArrayList<Ability> shootAbilities = getAbility();
 		for (Ability ability : shootAbilities) {
 			if (ability instanceof Shoot) {
-				ArrayList<Bullet> newBullets = ((Shoot) ability).createBullet(this);
+				ArrayList<Bullet> newBullets = ((Shoot) ability).createBullet(this, this.direction);
 				GameLogic.getInstance().getBullets().addAll(newBullets);
 			}
 		}
@@ -71,32 +72,56 @@ public abstract class Piece extends Entity implements Relocatable {
 
 	@Override
 	public void moveUp() {
-		if (gridY > 0)
+		boolean moveable = true;
+		for (Piece enemy : GameLogic.getInstance().getEnemies()) {
+			if (gridY - 1 == enemy.getGridY() && gridX == enemy.getGridX()) {
+				moveable = false;
+			}
+		}
+		if (gridY > 0 && moveable)
 			gridY--;
 		updatePlayerPosition();
 	}
 
 	@Override
 	public void moveDown() {
-		if (gridY < GRID_BOUNDARY)
+		boolean moveable = true;
+		for (Piece enemy : GameLogic.getInstance().getEnemies()) {
+			if (gridY + 1 == enemy.getGridY() && gridX == enemy.getGridX()) {
+				moveable = false;
+			}
+		}
+		if (gridY < GRID_BOUNDARY && moveable)
 			gridY++;
 		updatePlayerPosition();
 	}
 
 	@Override
 	public void moveLeft() {
-		if (gridX > 0)
+		boolean moveable = true;
+		for (Piece enemy : GameLogic.getInstance().getEnemies()) {
+			if (gridY == enemy.getGridY() && gridX - 1 == enemy.getGridX()) {
+				moveable = false;
+			}
+		}
+		if (gridX > 0 && moveable)
 			gridX--;
 		updatePlayerPosition();
 	}
 
 	@Override
 	public void moveRight() {
-		if (gridX < GRID_BOUNDARY)
+		boolean moveable = true;
+		for (Piece enemy : GameLogic.getInstance().getEnemies()) {
+			if (gridY == enemy.getGridY() && gridX + 1 == enemy.getGridX()) {
+				moveable = false;
+			}
+		}
+		if (gridX < GRID_BOUNDARY && moveable)
 			gridX++;
 		updatePlayerPosition();
 	}
-	
+
 	public void count() {
 		count++;
 	}
@@ -142,4 +167,13 @@ public abstract class Piece extends Entity implements Relocatable {
 	public void setImageView(ImageView imageView) {
 		this.imageView = imageView;
 	}
+
+	public int getDirection() {
+		return direction;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
+	}
+
 }

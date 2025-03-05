@@ -2,6 +2,7 @@ package entity.player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import ability.Ability;
@@ -25,11 +26,21 @@ public class Player extends Piece {
 
 	public Player(Double x, Double y, int hp) {
 		// TODO Auto-generated constructor stub
-
 		// Player Logic
 		super(x, y, hp);
-//		this.ability.add(new ShootStraight(1, 0.075));
-		this.ability.add(new ShootCardinal(100, 0.075));
+		Random random = new Random();
+		int number = random.nextInt(3);
+		ArrayList<Ability> playerAbility = new ArrayList<Ability>();
+//		if (number == 0) {
+//			playerAbility.add(new ShootStraight(1, 0.075));
+//		} else if (number == 1) {
+//			playerAbility.add(new ShootCardinal(1, 0.075));
+//		} else if (number == 2) {
+//			playerAbility.add(new ShootDiagonal(1, 0.075));
+//			playerAbility.add(new ShootCardinal(1, 0.075));
+//		}
+		playerAbility.add(new ShootStraight(1, 0.075));
+		setAbility(playerAbility);
 		// Player Display
 		this.imageView = new ImageView(
 				new Image(getClass().getResourceAsStream("/PNGs/With Shadow/1024px/w_king_png_shadow_1024px.png")));
