@@ -33,6 +33,7 @@ public class GameLogic {
 	private int maxEnemies; // Max enemies per wave
 	private double[][] enemypositions = { { 3, 2 }, { 1, 8 }, { 3, 14 }, { 13, 11 }, { 13, 5 }, { 9, 1 }, { 9, 15 },
 			{ 15, 15 }, { 15, 1 }, { 1, 5 }, { 1, 11 }, { 15, 8 } };
+	private int[][] reflect = { { 1, 2 }, { 3, 4 }, { 5, 8 }, { 6, 7 } };
 
 	public GameLogic() {
 		player = new Player(8.0, 15.0, 10); // Start position
@@ -94,10 +95,10 @@ public class GameLogic {
 				enemy = new Rook(enemypositions[number][1], enemypositions[number][0], 5);
 				break;
 			case 3:
-				enemy = new Bishop(enemypositions[number][1], enemypositions[number][0], 5);
+				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 7);
 				break;
 			case 4:
-				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 7);
+				enemy = new King(enemypositions[number][1], enemypositions[number][0], 10);
 				break;
 			default:
 				// Fallback to Pawn for unexpected wave numbers
@@ -153,7 +154,7 @@ public class GameLogic {
 					enemy.setDirection(8);// Move Down Right
 			}
 			if (enemy.getCount() >= 150) {
-				enemy.shootBullet();
+//				enemy.shootBullet();
 				enemy.resetCount();
 			}
 		}
@@ -215,9 +216,41 @@ public class GameLogic {
 					double distance = Math.sqrt(dx * dx + dy * dy);
 
 					if (distance < tolerance) {
+						SoundManager.playHit();
+
+						// Reflection logic for King and Queen
+						if ((enemy instanceof King || enemy instanceof Queen)
+								&& ((enemy instanceof King && ((King) enemy).getReflectLeft() > 0)
+										|| (enemy instanceof Queen && ((Queen) enemy).getReflectLeft() > 0))) {
+
+							// Find new direction based on reflection pairs
+							for (int[] pair : reflect) {
+								if (enemy.getDirection() == pair[0]) {
+									bullet.setDirection(pair[1]);
+									break;
+								} else if (enemy.getDirection() == pair[1]) {
+									bullet.setDirection(pair[0]);
+									break;
+								}
+							}
+
+							// Change bullet ownership and mark reflection
+							bullet.setPlayerBullet(false);
+							bullet.rotate();
+							System.out.println(enemy.getDirection());
+							// Decrement reflection count
+							if (enemy instanceof King) {
+								((King) enemy).reflected();
+							} else {
+								((Queen) enemy).reflected();
+							}
+
+							// Continue to next iteration to prevent further processing
+							continue;
+						}
+
 						enemy.takeDamage(bullet.getDamage());
 						bullet.decreaseDurability();
-						SoundManager.playHit();
 						if (bullet.isDestroyed()) {
 							bulletsToRemove.add(bullet);
 							Platform.runLater(() -> GameGUI.getRoot().getChildren().remove(bullet.getImageView()));

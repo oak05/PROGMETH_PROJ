@@ -3,6 +3,8 @@ package entity.player;
 import java.util.ArrayList;
 import java.util.Random;
 import ability.Ability;
+import ability.ShootCardinal;
+import ability.ShootDiagonal;
 import ability.ShootStraight;
 import entity.base.Piece;
 import javafx.scene.image.Image;
@@ -19,15 +21,14 @@ public class Player extends Piece {
 		Random random = new Random();
 		int number = random.nextInt(3);
 		ArrayList<Ability> playerAbility = new ArrayList<Ability>();
-//		if (number == 0) {
-//			playerAbility.add(new ShootStraight(1, 0.075));
-//		} else if (number == 1) {
-//			playerAbility.add(new ShootCardinal(1, 0.075));
-//		} else if (number == 2) {
-//			playerAbility.add(new ShootDiagonal(1, 0.075));
-//			playerAbility.add(new ShootCardinal(1, 0.075));
-//		}
-		playerAbility.add(new ShootStraight(1, 0.075));
+		if (number == 0) {
+			playerAbility.add(new ShootStraight(1, 0.075));
+		} else if (number == 1) {
+			playerAbility.add(new ShootCardinal(1, 0.075));
+		} else if (number == 2) {
+			playerAbility.add(new ShootDiagonal(1, 0.075));
+			playerAbility.add(new ShootCardinal(1, 0.075));
+		}
 		setAbility(playerAbility);
 		// Player Display
 		this.imageView = new ImageView(

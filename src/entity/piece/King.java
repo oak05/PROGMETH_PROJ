@@ -7,16 +7,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class King extends Piece {
+	private int reflectLeft = 3;
 
 	public King(Double x, Double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
 		this.ability.add(new ShootDiagonal(2, 0.05));
 		this.ability.add(new ShootCardinal(2, 0.05));
-		
+
 		// Piece Display
 		this.imageView = new ImageView(
-				new Image(getClass().getResourceAsStream("/PNGs/With Shadow/1024px/w_king_png_shadow_1024px.png")));
+				new Image(getClass().getResourceAsStream("/PNGs/With Shadow/1024px/b_king_png_shadow_1024px.png")));
 		this.imageView.setManaged(false);
 		this.imageView.setFitWidth(tileSize);
 		this.imageView.setFitHeight(tileSize);
@@ -24,4 +25,11 @@ public class King extends Piece {
 		this.imageView.setY(getGridY() * tileSize);
 	}
 
+	public int getReflectLeft() {
+		return reflectLeft;
+	}
+	
+	public void reflected() {
+		this.reflectLeft--;
+	}
 }
