@@ -274,8 +274,10 @@ public class GameLogic {
 							// Decrement reflection count
 							if (enemy instanceof King) {
 								((King) enemy).reflected();
-							} else {
+							} else if(enemy instanceof Queen) {
 								((Queen) enemy).reflected();
+							} else if(enemy instanceof Knight) {
+								((Knight) enemy).reflected();
 							}
 
 							// Continue to next iteration to prevent further processing
