@@ -13,8 +13,6 @@ import javafx.scene.image.ImageView;
 
 public class Player extends Piece {
 
-	private double speed;
-
 	public Player(Double x, Double y, int hp) {
 		// TODO Auto-generated constructor stub
 		// Player Logic
@@ -40,14 +38,6 @@ public class Player extends Piece {
 
 	public void setPlayerImageView(ImageView playerImageView) {
 		this.imageView = playerImageView;
-	}
-
-	public double getSpeed() {
-		return speed;
-	}
-
-	public void setSpeed(double speed) {
-		this.speed = speed;
 	}
 
 }

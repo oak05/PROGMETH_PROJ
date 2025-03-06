@@ -6,12 +6,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Knight extends Piece {
-	private int reflectLeft = 1;
+	private int reflectLeft;
 
 	public Knight(double x, double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
 		this.ability.add(new ShootDiagonal(1, 0.125));
+		this.setReflectLeft(1);
 		
 		// Piece Display
 		this.imageView = new ImageView(
@@ -27,6 +28,10 @@ public class Knight extends Piece {
 	
 	public int getReflectLeft() {
 		return reflectLeft;
+	}
+
+	public void setReflectLeft(int reflectLeft) {
+		this.reflectLeft = reflectLeft;
 	}
 
 	public void reflected() {

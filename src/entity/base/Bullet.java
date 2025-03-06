@@ -15,10 +15,10 @@ import javafx.util.Duration;
 
 public class Bullet extends Entity implements Relocatable {
 	private int damage;
-	private double speed;
 	private int direction;
-	private boolean isPlayerBullet;
 	private int durability = 1;
+	private double speed;
+	private boolean isPlayerBullet;
 	private ImageView imageView;
 
 	public Bullet(Double posX, Double posY, int damage, double speed, int direction, boolean isPlayerBullet,String bulletImage) {

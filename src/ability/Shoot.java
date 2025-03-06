@@ -14,7 +14,6 @@ public abstract class Shoot implements Ability {
 	private int bulletDamage;
 	private double bulletSpeed;
 	protected boolean isPlayer;
-	protected double Y;
 
 	// Constructor
 

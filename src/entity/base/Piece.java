@@ -17,13 +17,13 @@ import soundeffect.SoundManager;
 
 public abstract class Piece extends Entity implements Relocatable {
 
-	public static final int tileSize = GameGUI.getTileSize();
 	private static final int GRID_BOUNDARY = GameGUI.getBoardSize() - 1;
+	protected static final int tileSize = GameGUI.getTileSize();
+	protected ImageView imageView;
+	protected ArrayList<Ability> ability;
 	private int health;
 	private boolean isDead;
 	private int direction = 1;
-	protected ImageView imageView;
-	protected ArrayList<Ability> ability;
 	private int count = 0;
 	private String bulletImage;
 

@@ -8,13 +8,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class King extends Piece {
-	private int reflectLeft = 5;
+	private int reflectLeft;
 
 	public King(Double x, Double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
 		this.ability.add(new ShootDiagonal(4, 0.075));
 		this.ability.add(new ShootCardinal(4, 0.075));
+		this.setReflectLeft(5);
 
 		// Piece Display
 		this.imageView = new ImageView(
@@ -31,6 +32,10 @@ public class King extends Piece {
 
 	public int getReflectLeft() {
 		return reflectLeft;
+	}
+	
+	public void setReflectLeft(int reflectLeft) {
+		this.reflectLeft = reflectLeft;
 	}
 
 	public void reflected() {
