@@ -8,13 +8,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Queen extends Piece {
-	private int reflectLeft = 1;
+	private int reflectLeft = 3;
 
 	public Queen(double x, double y, int hp) {
 		super(x, y, hp);
 		// TODO Auto-generated constructor stub
-		this.ability.add(new ShootDiagonal(1, 0.1));
-		this.ability.add(new ShootCardinal(1, 0.1));
+		this.ability.add(new ShootDiagonal(1, 0.15));
+		this.ability.add(new ShootCardinal(1, 0.15));
 
 		// Piece Display
 		this.imageView = new ImageView(

@@ -33,7 +33,7 @@ import soundeffect.BackgroundMusic;
 public class GameGUI extends Application {
 	private static boolean isSpacebarPressed = false;
 	private static long lastShootTime = 0;
-	private static final long SHOOT_COOLDOWN = 1000;
+	private static final long SHOOT_COOLDOWN = 500;
 	private static final int BOARD_SIZE = 17;
 	private static final int TILE_SIZE = 40;
 	private static final int SIZE = BOARD_SIZE * TILE_SIZE;
@@ -96,7 +96,7 @@ public class GameGUI extends Application {
 
 		// Wave selection options (ComboBox for simplicity)
 		ComboBox<String> levelSelectionComboBox = new ComboBox<>();
-		levelSelectionComboBox.getItems().addAll("Level 1", "Level 2", "Level 3", "Level 4");
+		levelSelectionComboBox.getItems().addAll("Level 1", "Level 2", "Level 3", "Level 4 ", "Level 5");
 		levelSelectionComboBox.setValue("Level 1");
 
 		// Start Button (to start the game with selected wave)
@@ -131,6 +131,7 @@ public class GameGUI extends Application {
 		gc = canvas.getGraphicsContext2D();
 
 		Player player = GameLogic.getInstance().getPlayer();
+		GameLogic.getInstance().playerUpgrade();
 		player.getPlayerImageView().setTranslateX(player.getGridX() * TILE_SIZE);
 		player.getPlayerImageView().setTranslateY(player.getGridY() * TILE_SIZE);
 

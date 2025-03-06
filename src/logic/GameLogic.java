@@ -23,13 +23,14 @@ import java.util.Set;
 public class GameLogic {
 	// Static instance (Singleton-like)
 	private static GameLogic instance;
+	public final static int MAX_WAVE = 5;
 
 	private Player player;
 	private ArrayList<Piece> enemies;
 	private ArrayList<Bullet> bullets;
 	private boolean isRunning;
-
-	private int wave; // Track the current wave
+	
+	private int wave;
 	private int maxEnemies; // Max enemies per wave
 	private double[][] enemypositions = { { 3, 2 }, { 1, 8 }, { 3, 14 }, { 13, 11 }, { 13, 5 }, { 9, 1 }, { 9, 15 },
 			{ 15, 15 }, { 15, 1 }, { 1, 5 }, { 1, 11 }, { 7, 8 } };
@@ -41,7 +42,7 @@ public class GameLogic {
 		bullets = new ArrayList<>();
 		isRunning = true;
 		wave = 1;
-		maxEnemies = 1; // Initial number of enemies in wave 1
+		maxEnemies = 4; // Initial number of enemies in wave 1
 	}
 
 	// Static method to get instance
@@ -86,7 +87,7 @@ public class GameLogic {
 			System.out.println("Spawning enemy at: " + enemypositions[number][1] + " " + enemypositions[number][0]);
 
 			// Create enemy based on wave
-			int enemyRandom = random.nextInt(5);
+			int enemyRandom = random.nextInt(wave + 1);
 			Piece enemy;
 			switch (enemyRandom) {
 			case 1:
@@ -99,9 +100,12 @@ public class GameLogic {
 				enemy = new Bishop(enemypositions[number][1], enemypositions[number][0], 7);
 				break;
 			case 4:
-				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 7);
+				enemy = new Knight(enemypositions[number][1], enemypositions[number][0], 8);
 				break;
 			case 5:
+				enemy = new Queen(enemypositions[number][1], enemypositions[number][0], 8);
+				break;
+			case 6:
 				enemy = new King(enemypositions[number][1], enemypositions[number][0], 10);
 				break;
 			default:
@@ -113,6 +117,30 @@ public class GameLogic {
 			Platform.runLater(() -> GameGUI.getRoot().getChildren().add(enemy.getImageView()));
 			enemies.add(enemy);
 		}
+	}
+	
+	public void playerUpgrade() {
+		ArrayList<Ability> playerAbility = new ArrayList<Ability>();
+		switch(wave) {
+		case 1:
+			playerAbility.add(new ShootStraight(2, 0.1));
+			break;
+		case 2:
+			playerAbility.add(new ShootStraight(2, 0.125));
+			break;
+		case 3:
+			playerAbility.add(new ShootCardinal(2, 0.125));
+			break;		
+		case 4:
+			playerAbility.add(new ShootCardinal(2, 0.125));
+			playerAbility.add(new ShootDiagonal(2, 0.125));
+			break;
+		case 5:
+			playerAbility.add(new ShootCardinal(2, 0.15));
+			playerAbility.add(new ShootDiagonal(2, 0.15));
+			break;	
+		}
+		player.setAbility(playerAbility);
 	}
 
 	public void playerShoot() {
@@ -179,7 +207,7 @@ public class GameLogic {
 
 		// Check if all enemies are defeated to transition to the next wave
 		if (enemies.isEmpty()) {
-			if (wave == 4) {
+			if (wave == MAX_WAVE) {
 				this.isRunning = false;
 				return;// End game
 			}
@@ -223,9 +251,10 @@ public class GameLogic {
 						SoundManager.playHit();
 
 						// Reflection logic for King and Queen
-						if ((enemy instanceof King || enemy instanceof Queen)
+						if ((enemy instanceof King || enemy instanceof Queen || enemy instanceof Knight)
 								&& ((enemy instanceof King && ((King) enemy).getReflectLeft() > 0)
-										|| (enemy instanceof Queen && ((Queen) enemy).getReflectLeft() > 0))) {
+										|| (enemy instanceof Queen && ((Queen) enemy).getReflectLeft() > 0)
+											|| (enemy instanceof Knight && ((Knight) enemy).getReflectLeft() > 0))) {
 
 							// Find new direction based on reflection pairs
 							for (int[] pair : reflect) {
@@ -292,19 +321,8 @@ public class GameLogic {
 
 	// Transition to the next waves
 	private void nextWave() {
-		Random random = new Random();
-		int number = random.nextInt(3);
-		ArrayList<Ability> playerAbility = new ArrayList<Ability>();
-		if (number == 0) {
-			playerAbility.add(new ShootStraight(1, 0.075));
-		} else if (number == 1) {
-			playerAbility.add(new ShootCardinal(1, 0.075));
-		} else if (number == 2) {
-			playerAbility.add(new ShootDiagonal(1, 0.075));
-			playerAbility.add(new ShootCardinal(1, 0.075));
-		}
-		player.setAbility(playerAbility);
 		wave++; // Increase wave number
+		playerUpgrade();
 		spawnEnemies(); // Spawn enemies for the next wave
 		System.out.println("Wave : " + wave);
 	}
@@ -315,7 +333,7 @@ public class GameLogic {
 	}
 
 	public boolean isGameWon() {
-		return enemies.isEmpty() && wave == 4; // All enemies defeated
+		return enemies.isEmpty() && wave == MAX_WAVE; // All enemies defeated
 	}
 
 	// Getters and Setters
@@ -334,9 +352,15 @@ public class GameLogic {
 	public boolean isRunning() {
 		return isRunning;
 	}
-
+	
 	public void setWave(int wave) {
-		this.wave = wave;
+		if(wave <= 0) {
+			wave = 1;
+		} else if(wave > MAX_WAVE) {
+			wave = MAX_WAVE;
+		} else {
+			this.wave = wave;
+		}
 	}
 
 	public int getWave() {
