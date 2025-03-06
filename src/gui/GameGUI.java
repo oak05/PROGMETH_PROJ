@@ -176,14 +176,6 @@ public class GameGUI extends Application {
 				player.setDirection(3);
 			} else if (event.getCode() == KeyCode.RIGHT) {
 				player.setDirection(4);
-			} else if (event.getCode() == KeyCode.UP && event.getCode() == KeyCode.LEFT) {
-				player.setDirection(5);
-			} else if (event.getCode() == KeyCode.UP && event.getCode() == KeyCode.RIGHT) {
-				player.setDirection(6);
-			} else if (event.getCode() == KeyCode.DOWN && event.getCode() == KeyCode.LEFT) {
-				player.setDirection(7);
-			} else if (event.getCode() == KeyCode.DOWN && event.getCode() == KeyCode.RIGHT) {
-				player.setDirection(8);
 			}
 			if (event.getCode() == KeyCode.SPACE) {
 				isSpacebarPressed = true;

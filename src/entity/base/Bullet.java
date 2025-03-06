@@ -18,7 +18,6 @@ public class Bullet extends Entity implements Relocatable {
 	private double speed;
 	private int direction;
 	private boolean isPlayerBullet;
-	private int durability = 1;
 	private ImageView imageView;
 
 	public Bullet(Double posX, Double posY, int damage, double speed, int direction, boolean isPlayerBullet,String bulletImage) {
@@ -103,14 +102,6 @@ public class Bullet extends Entity implements Relocatable {
 		} else if (direction == 8) {
 			this.imageView.setRotate(45);
 		}
-	}
-
-	public void decreaseDurability() {
-		durability--;
-	}
-
-	public boolean isDestroyed() {
-		return durability <= 0;
 	}
 
 	@Override
